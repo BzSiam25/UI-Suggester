@@ -1,0 +1,200 @@
+[
+    {
+        "slug": "shopnest-landing",
+        "title": "Shopnest fashion storefront",
+        "cat": "e-commerce",
+        "p": "web",
+        "s": "landing",
+        "tags": "fashion,gradient,hero",
+        "prompt": "online fashion store"
+    },
+    {
+        "slug": "cartly-mobile-home",
+        "title": "Shopnest shopping app home",
+        "cat": "e-commerce",
+        "p": "mobile",
+        "s": "home",
+        "tags": "shopping,cards,bottom nav",
+        "prompt": "shopping marketplace app"
+    },
+    {
+        "slug": "biteway-mobile-home",
+        "title": "Biteway food delivery home",
+        "cat": "food-delivery",
+        "p": "mobile",
+        "s": "home",
+        "tags": "food,orange,cards",
+        "prompt": "food delivery app"
+    },
+    {
+        "slug": "forkly-dashboard",
+        "title": "Forkly restaurant admin",
+        "cat": "food-delivery",
+        "p": "web",
+        "s": "dashboard",
+        "tags": "admin,table,charts",
+        "prompt": "restaurant order management"
+    },
+    {
+        "slug": "caregrid-login",
+        "title": "Pulsewell telemedicine sign-in",
+        "cat": "health-medical",
+        "p": "mobile",
+        "s": "login",
+        "tags": "login,clean,healthcare",
+        "prompt": "telemedicine clinic app"
+    },
+    {
+        "slug": "medinest-catalog",
+        "title": "Pulsewell doctor directory",
+        "cat": "health-medical",
+        "p": "web",
+        "s": "product-list",
+        "tags": "directory,filters,teal",
+        "prompt": "doctor appointment booking"
+    },
+    {
+        "slug": "ledgerly-dashboard",
+        "title": "Ledgerly finance dashboard",
+        "cat": "finance-banking",
+        "p": "web",
+        "s": "dashboard",
+        "tags": "dark mode,fintech,charts",
+        "prompt": "personal finance tracker"
+    },
+    {
+        "slug": "coinly-wallet",
+        "title": "Coinly wallet overview",
+        "cat": "finance-banking",
+        "p": "mobile",
+        "s": "dashboard",
+        "tags": "glassmorphism,wallet,stats",
+        "prompt": "mobile wallet payment app"
+    },
+    {
+        "slug": "skillpath-pricing",
+        "title": "Skillpath course pricing",
+        "cat": "education",
+        "p": "web",
+        "s": "pricing",
+        "tags": "pricing,minimal,monochrome",
+        "prompt": "online course platform"
+    },
+    {
+        "slug": "learnly-course",
+        "title": "Skillpath course detail",
+        "cat": "education",
+        "p": "mobile",
+        "s": "product-detail",
+        "tags": "course,detail,cta",
+        "prompt": "e-learning course app"
+    },
+    {
+        "slug": "roamio-stays",
+        "title": "Roamio stays explorer",
+        "cat": "travel-booking",
+        "p": "web",
+        "s": "product-list",
+        "tags": "glassmorphism,travel,grid",
+        "prompt": "hotel booking"
+    },
+    {
+        "slug": "staybird-home",
+        "title": "Roamio travel app",
+        "cat": "travel-booking",
+        "p": "mobile",
+        "s": "home",
+        "tags": "travel,search,cards",
+        "prompt": "trip and hotel booking app"
+    },
+    {
+        "slug": "homely-landing",
+        "title": "Homely rentals landing",
+        "cat": "real-estate",
+        "p": "web",
+        "s": "landing",
+        "tags": "real estate,hero,corporate",
+        "prompt": "property rental platform"
+    },
+    {
+        "slug": "nestfind-detail",
+        "title": "Keyhaven listing detail",
+        "cat": "real-estate",
+        "p": "mobile",
+        "s": "product-detail",
+        "tags": "listing,detail,minimal",
+        "prompt": "apartment rent app"
+    },
+    {
+        "slug": "fitloop-workout",
+        "title": "Fitloop workout detail",
+        "cat": "fitness-wellness",
+        "p": "mobile",
+        "s": "product-detail",
+        "tags": "dark mode,fitness,bold",
+        "prompt": "gym workout tracker"
+    },
+    {
+        "slug": "pacely-dashboard",
+        "title": "Motive training stats",
+        "cat": "fitness-wellness",
+        "p": "mobile",
+        "s": "dashboard",
+        "tags": "stats,charts,green",
+        "prompt": "running and workout tracker"
+    },
+    {
+        "slug": "krishok-dashboard",
+        "title": "Greenrow smart farm monitor",
+        "cat": "agriculture",
+        "p": "mobile",
+        "s": "dashboard",
+        "tags": "agriculture,iot,green",
+        "prompt": "smart farming crop monitoring"
+    },
+    {
+        "slug": "greenrow-market",
+        "title": "Fieldly crop marketplace",
+        "cat": "agriculture",
+        "p": "web",
+        "s": "product-list",
+        "tags": "marketplace,agriculture,grid",
+        "prompt": "farm crop marketplace"
+    },
+    {
+        "slug": "circlo-profile",
+        "title": "Kinship community profile",
+        "cat": "social-community",
+        "p": "mobile",
+        "s": "profile",
+        "tags": "profile,settings,glassmorphism",
+        "prompt": "social community app"
+    },
+    {
+        "slug": "huddle-landing",
+        "title": "Huddle community landing",
+        "cat": "social-community",
+        "p": "web",
+        "s": "landing",
+        "tags": "playful,hero,social",
+        "prompt": "community chat network"
+    },
+    {
+        "slug": "taskflow-login",
+        "title": "Planora workspace login",
+        "cat": "productivity-saas",
+        "p": "web",
+        "s": "login",
+        "tags": "login,split screen,saas",
+        "prompt": "project management saas"
+    },
+    {
+        "slug": "planora-dashboard",
+        "title": "Workbench project dashboard",
+        "cat": "productivity-saas",
+        "p": "web",
+        "s": "dashboard",
+        "tags": "dashboard,sidebar,kpi",
+        "prompt": "task and project management"
+    }
+]
