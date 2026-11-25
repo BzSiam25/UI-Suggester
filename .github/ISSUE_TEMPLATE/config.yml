@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/BzSiam25/UI-Suggester/blob/main/SECURITY.md
+    about: Please report security issues privately by email, not as a public issue.
+  - name: Setup and usage questions
+    url: https://github.com/BzSiam25/UI-Suggester/blob/main/README.md
+    about: Installation, configuration and local model setup are documented in the README.

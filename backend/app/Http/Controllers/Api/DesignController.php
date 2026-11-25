@@ -8,10 +8,10 @@ use App\Models\Category;
 use App\Models\Design;
 use App\Models\Tag;
 use App\Services\PaletteExtractor;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class DesignController extends Controller

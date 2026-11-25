@@ -338,7 +338,7 @@ HTML;
         [$kicker, $headline, $sub, $primary, $secondary] = $this->heroCopy();
         $tiles = '';
         foreach (array_slice($this->d['features'], 0, 3) as $i => [$icon, $title]) {
-            $tiles .= "<div class=\"card\" style=\"padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px;background:".($i === 0 ? 'var(--accent);color:#fff;border-color:transparent' : 'var(--surface)')."\"><span style=\"font-size:22px\">{$icon}</span><strong style=\"font-size:14.5px;line-height:1.3\">{$this->e($title)}</strong></div>";
+            $tiles .= '<div class="card" style="padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px;background:'.($i === 0 ? 'var(--accent);color:#fff;border-color:transparent' : 'var(--surface)')."\"><span style=\"font-size:22px\">{$icon}</span><strong style=\"font-size:14.5px;line-height:1.3\">{$this->e($title)}</strong></div>";
         }
         $stat = $this->d['heroStats'][0] ?? ['24/7', 'Support'];
 
@@ -432,7 +432,7 @@ HTML;
     {
         $rows = '';
         foreach ($this->pickItems(3) as $i => [$name, $meta]) {
-            $rows .= "<div style=\"display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)\"><span class=\"mini\">".$this->d['features'][$i % 3][0]."</span><div style=\"flex:1;min-width:0\"><div style=\"font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis\">{$this->e($name)}</div><div class=\"muted\" style=\"font-size:11.5px\">{$this->e($meta)}</div></div><span class=\"badge\">".($i % 2 ? 'Active' : 'New')."</span></div>";
+            $rows .= '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)"><span class="mini">'.$this->d['features'][$i % 3][0]."</span><div style=\"flex:1;min-width:0\"><div style=\"font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis\">{$this->e($name)}</div><div class=\"muted\" style=\"font-size:11.5px\">{$this->e($meta)}</div></div><span class=\"badge\">".($i % 2 ? 'Active' : 'New').'</span></div>';
         }
 
         return <<<HTML
@@ -464,7 +464,7 @@ HTML;
         $values = [46, 62, 55, 74, 68, 88, 79, 94, 72, 90, 84, 97];
         shuffle($values);
         foreach ($values as $i => $h) {
-            $bars .= "<div style=\"flex:1;height:{$h}%;background:var(--accent);opacity:".($i === 7 ? '1' : '.28').";border-radius:3px 3px 0 0\"></div>";
+            $bars .= "<div style=\"flex:1;height:{$h}%;background:var(--accent);opacity:".($i === 7 ? '1' : '.28').';border-radius:3px 3px 0 0"></div>';
         }
 
         return <<<HTML
@@ -483,7 +483,7 @@ HTML;
     {
         $rows = '';
         foreach ($this->pickItems(3) as $i => [$name, $meta]) {
-            $rows .= "<div style=\"display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)\"><span class=\"mini\">".$this->d['features'][$i % 3][0]."</span><div style=\"flex:1;font-size:12px;font-weight:600\">{$this->e($name)}</div><span style=\"font-size:11.5px;color:var(--accent);font-weight:700\">{$this->e($meta)}</span></div>";
+            $rows .= '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)"><span class="mini">'.$this->d['features'][$i % 3][0]."</span><div style=\"flex:1;font-size:12px;font-weight:600\">{$this->e($name)}</div><span style=\"font-size:11.5px;color:var(--accent);font-weight:700\">{$this->e($meta)}</span></div>";
         }
 
         return <<<HTML
@@ -561,7 +561,7 @@ HTML;
     {
         $rows = '';
         foreach ($this->d['features'] as $i => [$icon, $title, $text]) {
-            $rows .= "<div style=\"display:grid;grid-template-columns:56px 1fr auto;gap:20px;align-items:center;padding:24px 0;border-top:1px solid var(--border)\"><span class=\"muted\" style=\"font-size:13px\">0".($i + 1)."</span><div><h3 style=\"font-size:20px;margin-bottom:4px\">{$this->e($title)}</h3><p class=\"muted\" style=\"font-size:14px\">{$this->e($text)}</p></div><span style=\"font-size:22px\">{$icon}</span></div>";
+            $rows .= '<div style="display:grid;grid-template-columns:56px 1fr auto;gap:20px;align-items:center;padding:24px 0;border-top:1px solid var(--border)"><span class="muted" style="font-size:13px">0'.($i + 1)."</span><div><h3 style=\"font-size:20px;margin-bottom:4px\">{$this->e($title)}</h3><p class=\"muted\" style=\"font-size:14px\">{$this->e($text)}</p></div><span style=\"font-size:22px\">{$icon}</span></div>";
         }
 
         return <<<HTML
@@ -607,7 +607,7 @@ HTML;
     {
         $html = '';
         foreach (array_slice($this->d['stats'], 0, 4) as [$label, $value, $delta]) {
-            $html .= "<div><div style=\"font-size:26px;font-weight:700;letter-spacing:-.02em\">".$this->e($this->jitter($value))."</div><div class=\"muted\" style=\"font-size:12.5px\">".$this->e($label)."</div></div>";
+            $html .= '<div><div style="font-size:26px;font-weight:700;letter-spacing:-.02em">'.$this->e($this->jitter($value)).'</div><div class="muted" style="font-size:12.5px">'.$this->e($label).'</div></div>';
         }
 
         return $html;
@@ -670,7 +670,7 @@ HTML;
         ];
         shuffle($quotes);
         foreach (array_slice($this->d['items'], 1, 3) as $i => $item) {
-            $cards .= "<div class=\"card\" style=\"padding:24px\"><div style=\"color:var(--accent);font-size:13px;letter-spacing:2px;margin-bottom:10px\">★★★★★</div><p style=\"font-size:14.5px;line-height:1.55;margin-bottom:16px\">".$this->e($quotes[$i])."</p><div class=\"muted\" style=\"font-size:12.5px\">".$this->e(['Nadia I.', 'Marcus L.', 'Sara K.'][$i]).' · '.$this->e($item[0]).'</div></div>';
+            $cards .= '<div class="card" style="padding:24px"><div style="color:var(--accent);font-size:13px;letter-spacing:2px;margin-bottom:10px">★★★★★</div><p style="font-size:14.5px;line-height:1.55;margin-bottom:16px">'.$this->e($quotes[$i]).'</p><div class="muted" style="font-size:12.5px">'.$this->e(['Nadia I.', 'Marcus L.', 'Sara K.'][$i]).' · '.$this->e($item[0]).'</div></div>';
         }
 
         return <<<HTML
@@ -695,7 +695,7 @@ HTML;
         $answer = $this->d['sub'];
         $rows = '';
         foreach ($questions as $i => $q) {
-            $rows .= "<details style=\"border-bottom:1px solid var(--border);padding:18px 0\"".($i === 0 ? ' open' : '')."><summary style=\"cursor:pointer;font-weight:600;font-size:15.5px;list-style:none;display:flex;justify-content:space-between;gap:16px\">{$this->e($q)}<span style=\"color:var(--accent)\">+</span></summary><p class=\"muted\" style=\"font-size:14px;margin-top:10px;max-width:620px\">{$this->e($answer)}</p></details>";
+            $rows .= '<details style="border-bottom:1px solid var(--border);padding:18px 0"'.($i === 0 ? ' open' : '')."><summary style=\"cursor:pointer;font-weight:600;font-size:15.5px;list-style:none;display:flex;justify-content:space-between;gap:16px\">{$this->e($q)}<span style=\"color:var(--accent)\">+</span></summary><p class=\"muted\" style=\"font-size:14px;margin-top:10px;max-width:620px\">{$this->e($answer)}</p></details>";
         }
 
         return <<<HTML
@@ -715,7 +715,7 @@ HTML;
         ];
         $html = '';
         foreach ($steps as $i => [$title, $text]) {
-            $html .= "<div style=\"display:grid;grid-template-columns:44px 1fr;gap:16px;padding:22px 0;border-top:1px solid var(--border)\"><div style=\"width:32px;height:32px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700\">".($i + 1)."</div><div><h3 style=\"font-size:17px;margin-bottom:4px\">{$this->e($title)}</h3><p class=\"muted\" style=\"font-size:13.5px\">{$this->e($text)}</p></div></div>";
+            $html .= '<div style="display:grid;grid-template-columns:44px 1fr;gap:16px;padding:22px 0;border-top:1px solid var(--border)"><div style="width:32px;height:32px;border-radius:50%;border:1px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">'.($i + 1)."</div><div><h3 style=\"font-size:17px;margin-bottom:4px\">{$this->e($title)}</h3><p class=\"muted\" style=\"font-size:13.5px\">{$this->e($text)}</p></div></div>";
         }
 
         return <<<HTML
@@ -752,7 +752,7 @@ HTML;
     {
         $cards = '';
         foreach ($this->pickItems(3) as $i => [$name, $meta]) {
-            $cards .= "<div class=\"card\" style=\"padding:12px\"><div class=\"art\" style=\"height:150px;margin-bottom:12px\"><div style=\"position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px\">".$this->d['features'][$i % 3][0]."</div><span style=\"position:absolute;top:10px;left:10px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--surface);color:var(--text);padding:3px 8px;border-radius:999px\">".$this->e($this->d['chips'][$i + 1] ?? 'Popular')."</span></div><div style=\"display:flex;justify-content:space-between;align-items:baseline;gap:8px\"><strong style=\"font-size:14.5px;line-height:1.3\">{$this->e($name)}</strong><span style=\"font-weight:700;color:var(--accent);white-space:nowrap;font-size:14px\">{$this->e($meta)}</span></div><div class=\"muted\" style=\"font-size:12.5px;margin-top:4px\">Clear pricing · fast replies</div></div>";
+            $cards .= '<div class="card" style="padding:12px"><div class="art" style="height:150px;margin-bottom:12px"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px">'.$this->d['features'][$i % 3][0].'</div><span style="position:absolute;top:10px;left:10px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--surface);color:var(--text);padding:3px 8px;border-radius:999px">'.$this->e($this->d['chips'][$i + 1] ?? 'Popular')."</span></div><div style=\"display:flex;justify-content:space-between;align-items:baseline;gap:8px\"><strong style=\"font-size:14.5px;line-height:1.3\">{$this->e($name)}</strong><span style=\"font-weight:700;color:var(--accent);white-space:nowrap;font-size:14px\">{$this->e($meta)}</span></div><div class=\"muted\" style=\"font-size:12.5px;margin-top:4px\">Clear pricing · fast replies</div></div>";
         }
 
         return <<<HTML
@@ -767,7 +767,7 @@ HTML;
     {
         $rows = '';
         foreach ($this->pickItems(4) as $i => [$name, $meta]) {
-            $rows .= "<div style=\"display:grid;grid-template-columns:64px 1fr auto auto;gap:18px;align-items:center;padding:16px 0;border-top:1px solid var(--border)\"><div class=\"art\" style=\"height:52px;width:64px;display:flex;align-items:center;justify-content:center;font-size:20px\">".$this->d['features'][$i % 3][0]."</div><div><div style=\"font-weight:600;font-size:15px\">{$this->e($name)}</div><div class=\"muted\" style=\"font-size:12.5px\">".$this->e($this->d['chips'][min($i + 1, count($this->d['chips']) - 1)])." · available this week</div></div><span class=\"badge\">{$this->e($meta)}</span><a href=\"#\" style=\"font-size:13px;font-weight:600;color:var(--accent)\">Choose →</a></div>";
+            $rows .= '<div style="display:grid;grid-template-columns:64px 1fr auto auto;gap:18px;align-items:center;padding:16px 0;border-top:1px solid var(--border)"><div class="art" style="height:52px;width:64px;display:flex;align-items:center;justify-content:center;font-size:20px">'.$this->d['features'][$i % 3][0]."</div><div><div style=\"font-weight:600;font-size:15px\">{$this->e($name)}</div><div class=\"muted\" style=\"font-size:12.5px\">".$this->e($this->d['chips'][min($i + 1, count($this->d['chips']) - 1)])." · available this week</div></div><span class=\"badge\">{$this->e($meta)}</span><a href=\"#\" style=\"font-size:13px;font-weight:600;color:var(--accent)\">Choose →</a></div>";
         }
 
         return <<<HTML
@@ -801,7 +801,7 @@ HTML;
         [$first] = $this->pickItems(1);
         $rest = '';
         foreach ($this->pickItems(3, 1) as $i => [$name, $meta]) {
-            $rest .= "<div class=\"card\" style=\"padding:18px;display:flex;flex-direction:column;justify-content:space-between;min-height:120px\"><span style=\"font-size:20px\">".$this->d['features'][$i % 3][0]."</span><div><div style=\"font-weight:600;font-size:14px\">{$this->e($name)}</div><div class=\"muted\" style=\"font-size:12.5px\">{$this->e($meta)}</div></div></div>";
+            $rest .= '<div class="card" style="padding:18px;display:flex;flex-direction:column;justify-content:space-between;min-height:120px"><span style="font-size:20px">'.$this->d['features'][$i % 3][0]."</span><div><div style=\"font-weight:600;font-size:14px\">{$this->e($name)}</div><div class=\"muted\" style=\"font-size:12.5px\">{$this->e($meta)}</div></div></div>";
         }
 
         return <<<HTML
@@ -941,7 +941,7 @@ HTML;
         $d = $this->d;
         $menu = '';
         foreach (array_merge(['Overview'], $d['nav'], ['Settings']) as $i => $item) {
-            $style = $i === 0 ? "background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:600" : '';
+            $style = $i === 0 ? 'background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-weight:600' : '';
             $menu .= "<a href='#' style='display:block;padding:10px 14px;border-radius:var(--r);{$style}'>{$this->e($item)}</a>";
         }
         $kpis = '';

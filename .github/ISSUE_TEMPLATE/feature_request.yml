@@ -1,0 +1,50 @@
+name: Feature request
+description: Suggest a capability or an improvement
+title: 'feat: '
+labels: ['enhancement', 'needs triage']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can you not do today, and who does it affect?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should it work from a user's point of view?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing workarounds, or other designs you rejected.
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - API / routes
+        - Generator (template engine)
+        - Generator (AI provider)
+        - Gallery / explore
+        - Uploads and moderation
+        - Auth and accounts
+        - Admin dashboard
+        - Frontend design
+        - Documentation / tooling
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: I can open a pull request for this
+        - label: This changes existing behaviour or the API contract

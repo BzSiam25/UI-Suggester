@@ -1,0 +1,38 @@
+# Normalise line endings: LF in the repository on every platform.
+* text=auto eol=lf
+
+# Source
+*.php   text diff=php
+*.js    text
+*.jsx   text
+*.json  text
+*.css   text
+*.html  text
+*.md    text
+*.yml   text
+*.yaml  text
+*.xml   text
+
+# Scripts must keep LF even on Windows checkouts.
+*.sh    text eol=lf
+artisan text eol=lf
+
+# Binaries
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.svg   text
+*.pdf   binary
+*.zip   binary
+
+# Lock files: treat as generated, keep diffs readable.
+composer.lock   -diff linguist-generated
+package-lock.json -diff linguist-generated
+
+# Build output and dependencies are not part of the source review.
+/vendor      export-ignore
+/node_modules export-ignore
+/dist        export-ignore
