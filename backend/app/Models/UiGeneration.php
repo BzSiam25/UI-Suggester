@@ -9,12 +9,12 @@ class UiGeneration extends Model
 {
     protected $fillable = [
         'user_id', 'category_id', 'prompt', 'platform', 'screen_type', 'style', 'accent',
-        'html', 'provider', 'is_public',
+        'html', 'provider', 'meta', 'is_public',
     ];
 
     protected function casts(): array
     {
-        return ['is_public' => 'boolean'];
+        return ['is_public' => 'boolean', 'meta' => 'array'];
     }
 
     public function user(): BelongsTo

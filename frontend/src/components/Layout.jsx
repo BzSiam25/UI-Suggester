@@ -1,10 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Logo, Menu, Upload } from './Icons'
+import { useScrollReveal } from '../hooks'
+import { Arrow, Menu, Upload } from './Icons'
+
+const REVEAL = [
+  '.hero .wrap > *',
+  '.page-head > div',
+  '.filters',
+  '.shot',
+  '.panel',
+  '.section-title',
+  '.history-item',
+  '.empty',
+  '.tabs',
+  '.queue-item',
+  '.kpi',
+  '.auth .panel',
+  '.detail .stage',
+  '.aside > *',
+  '.viewer',
+]
 
 export default function Layout() {
   const { user, logout, isAdmin } = useAuth()
+  useScrollReveal(REVEAL)
   const [menuOpen, setMenuOpen] = useState(false)
   const [navOpen, setNavOpen] = useState(false)
   const location = useLocation()
@@ -23,7 +43,7 @@ export default function Layout() {
       <header className="topbar">
         <div className="wrap topbar-inner">
           <button className="btn quiet icon-btn mobile-toggle" aria-label="Menu" onClick={() => setNavOpen((o) => !o)}><Menu /></button>
-          <Link to="/" className="brand"><Logo />UISpark</Link>
+          <Link to="/" className="brand">UISpark<span className="dot">.</span></Link>
           <nav className={`nav ${navOpen ? 'open' : ''}`} aria-label="Main">
             <NavLink to="/" end>Explore</NavLink>
             <NavLink to="/generate">Generate</NavLink>
@@ -39,7 +59,7 @@ export default function Layout() {
                 </button>
                 {menuOpen && (
                   <div className="menu" role="menu">
-                    <div className="menu-head"><strong>{user.name}</strong><div className="muted small">{user.email}</div></div>
+                    <div className="menu-head"><strong>{user.name}</strong><div className="muted">{user.email}</div></div>
                     <hr />
                     <Link to="/upload">Upload a design</Link>
                     <Link to="/me/bookmarks">Bookmarks</Link>
@@ -55,7 +75,7 @@ export default function Layout() {
             ) : (
               <>
                 <Link to="/login" className="btn quiet small">Log in</Link>
-                <Link to="/register" className="btn small">Sign up</Link>
+                <Link to="/register" className="btn small arrow">Sign up</Link>
               </>
             )}
           </div>
@@ -65,10 +85,45 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="footer">
-        <div className="wrap row">
-          <span>UISpark: real UI screens and instant mockups for any product idea.</span>
-          <span className="spacer" />
-          <Link to="/upload">Share a design</Link>
+        <div className="wrap">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <Link to="/" className="brand">UISpark<span className="dot">.</span></Link>
+              <p>Real UI screens and instant mockups for any product idea. Browse what already works, then draw your own.</p>
+            </div>
+            <div className="footer-col">
+              <span className="eyebrow">Browse</span>
+              <Link to="/">All designs</Link>
+              <Link to="/?platform=mobile">Mobile screens</Link>
+              <Link to="/?sort=trending">Trending this week</Link>
+            </div>
+            <div className="footer-col">
+              <span className="eyebrow">Create</span>
+              <Link to="/generate">Generate a mockup</Link>
+              <Link to="/upload">Share a design</Link>
+              <Link to="/showcase">Community showcase</Link>
+            </div>
+            <div className="footer-col">
+              <span className="eyebrow">{user ? 'Your account' : 'Get started'}</span>
+              {user ? (
+                <>
+                  <Link to="/me/bookmarks">Bookmarks</Link>
+                  <Link to="/me/uploads">My uploads</Link>
+                  <Link to="/me/settings">Settings</Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/register">Create an account</Link>
+                  <Link to="/login">Log in</Link>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="footer-bar">
+            <span>© {new Date().getFullYear()} UISpark</span>
+            <span className="spacer" />
+            <span>React · Vite · Laravel</span>
+          </div>
         </div>
       </footer>
     </>

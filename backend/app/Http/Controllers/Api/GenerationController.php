@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
 
 class GenerationController extends Controller
 {
-    private const LIST_COLUMNS = ['id', 'user_id', 'category_id', 'prompt', 'platform', 'screen_type', 'style', 'accent', 'provider', 'is_public', 'created_at'];
+    private const LIST_COLUMNS = ['id', 'user_id', 'category_id', 'prompt', 'platform', 'screen_type', 'style', 'accent', 'provider', 'meta', 'is_public', 'created_at'];
 
     /** Options for the generator form. */
     public function options(): JsonResponse
@@ -51,6 +51,7 @@ class GenerationController extends Controller
             ...collect($data)->except('use_ai')->all(),
             'html' => $result['html'],
             'provider' => $result['provider'],
+            'meta' => $result['design'] ?? null,
         ]);
 
         return (new GenerationResource($generation->load('category')))

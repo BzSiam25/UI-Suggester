@@ -32,7 +32,7 @@ export function Bookmarks() {
 
   return (
     <div className="wrap">
-      <div className="page-head"><div><h1>Bookmarks</h1><p>Designs you saved, grouped into collections for each project.</p></div></div>
+      <div className="page-head"><div><span className="eyebrow">Saved work</span><h1>Bookmarks</h1><p>Designs you saved, grouped into collections for each project.</p></div></div>
       <div className="tabs" role="tablist">
         <button role="tab" aria-selected={!collection} onClick={() => { setCollection(''); setPage(1) }}>All saved</button>
         {collections.data?.data.map((c) => (
@@ -69,7 +69,7 @@ export function MyUploads() {
   return (
     <div className="wrap">
       <div className="page-head">
-        <div><h1>My uploads</h1><p>Track your submissions. Pending designs go live once an admin approves them.</p></div>
+        <div><span className="eyebrow">Your submissions</span><h1>My uploads</h1><p>Track your submissions. Pending designs go live once an admin approves them.</p></div>
         <span className="spacer" /><Link className="btn" to="/upload">Upload a design</Link>
       </div>
       <div className="tabs" role="tablist">
@@ -135,7 +135,7 @@ export function Settings() {
 
   return (
     <div className="wrap" style={{ maxWidth: 640, paddingBottom: 40 }}>
-      <div className="page-head"><div><h1>Settings</h1></div></div>
+      <div className="page-head"><div><span className="eyebrow">Account</span><h1>Settings</h1></div></div>
       <form className="panel stack" onSubmit={save}>
         <label className="field"><span>Name</span><input className="input" value={form.name} onChange={set('name')} required />{err('name')}</label>
         <label className="field"><span>Email</span><input className="input" value={user.email} disabled /></label>

@@ -14,6 +14,36 @@ const STYLE_PREVIEW = {
   corporate: 'linear-gradient(135deg,#e8f0fa,#0b5cab)',
   glass: 'linear-gradient(135deg,#3a1c71,#d76d77,#ffaf7b)',
 }
+const PROVIDER_LABEL = { local: 'Qwen', anthropic: 'Claude', template: 'Template' }
+const RESEARCH_LABEL = { live: 'Live web research', cache: 'Web research · cached', curated: 'Reference gallery', offline: 'Reference gallery' }
+
+/** Shows the art direction a mockup was built in, plus the pages that inspired it. */
+export function DesignNote({ design, compact }) {
+  if (!design) return null
+  const references = design.research?.references || []
+  const recipe = design.recipe
+
+  return (
+    <div className="notice info" style={{ margin: compact ? 0 : '12px 14px 0', display: 'flex', flexDirection: 'column', gap: 7 }}>
+      <div className="row" style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span className="pill">{design.direction}</span>
+        {recipe && <span>{recipe.hero} hero · {recipe.features} benefits · {recipe.showcase} showcase · {recipe.order}</span>}
+        <span className="pill">{RESEARCH_LABEL[design.research?.source] || 'References'}</span>
+      </div>
+      {references.length > 0 && (
+        <div className="row" style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span>Inspired by</span>
+          {references.slice(0, 4).map((r) => (
+            <a key={r.url} className="pill" href={r.url} target="_blank" rel="noreferrer noopener" style={{ textDecoration: 'none', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis' }} title={r.title}>
+              {r.source || r.title}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const ACCENTS = ['#2b4bee', '#0d9488', '#16a34a', '#ea580c', '#e11d48', '#7c3aed', '#111111']
 const IDEAS = ['Pharmacy delivery app', 'Freelancer job portal', 'Smart farm monitor', 'Online tuition platform', 'Laundry pickup service', 'Mosque prayer-time app']
 
@@ -132,6 +162,7 @@ export default function Generate() {
     <div className="wrap">
       <div className="page-head">
         <div>
+          <span className="eyebrow">Mockup generator</span>
           <h1>Generate a UI idea</h1>
           <p>Describe the product and pick a screen. You get a working HTML mockup you can open, download and share.</p>
         </div>
@@ -195,12 +226,12 @@ export default function Generate() {
           {aiEnabled && (
             <label className="check">
               <input type="checkbox" checked={form.use_ai} onChange={(e) => set('use_ai')(e.target.checked)} />
-              <span>Design with AI <span className="muted small">(slower, more varied). Off uses the instant template engine.</span></span>
+              <span>Design with AI <span className="muted small">(runs on Qwen, slower but more varied). Off uses the instant template engine.</span></span>
             </label>
           )}
 
           <button className="btn" disabled={busy || form.prompt.trim().length < 3} style={{ height: 46 }}>
-            {busy ? <><span className="thinking" />{aiEnabled && form.use_ai ? 'Designing, this can take 30 seconds' : 'Generating'}</> : <><Spark />Generate mockup</>}
+            {busy ? <><span className="thinking" />{aiEnabled && form.use_ai ? 'Designing on the local model — up to 3 minutes' : 'Generating'}</> : <><Spark />Generate mockup</>}
           </button>
           {!user && <p className="muted small"><Link to="/login">Log in</Link> or <Link to="/register">create an account</Link> to generate and keep your mockups.</p>}
         </form>
@@ -210,13 +241,15 @@ export default function Generate() {
             <>
               <div className="viewer-bar">
                 <strong style={{ marginRight: 'auto' }}>{current.prompt}</strong>
-                <span className="pill">{current.provider === 'anthropic' ? 'AI' : 'Template'}</span>
+                <span className="pill">{PROVIDER_LABEL[current.provider] || 'Template'}</span>
+                <button className="btn secondary small" onClick={generate} disabled={busy} title="Same brief, new layout and palette">{busy ? 'Designing…' : 'New direction'}</button>
                 <button className="btn secondary small" onClick={() => openHtml(current.html)}><External />Open</button>
                 <button className="btn secondary small" onClick={() => downloadHtml(current.html, `uispark-${current.platform}-${current.screen_type}.html`)}><Download />HTML</button>
                 {current.is_owner && <button className={`btn small ${current.is_public ? 'on' : 'secondary'}`} onClick={togglePublic}><Globe />{current.is_public ? 'Shared' : 'Share'}</button>}
                 {current.is_owner && <button className="btn quiet small icon-btn" aria-label="Delete mockup" onClick={remove}><Trash /></button>}
               </div>
               {notice && <div className="notice warn" style={{ margin: '12px 14px 0' }}>{notice}</div>}
+              <DesignNote design={current.design} />
               <div className="viewer-stage"><Preview generation={current} /></div>
             </>
           ) : (

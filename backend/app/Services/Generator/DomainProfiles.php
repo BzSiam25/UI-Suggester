@@ -170,8 +170,25 @@ class DomainProfiles
             'tableHead' => ['Task', 'Owner', 'Due', 'Status'],
             'entity' => 'task',
         ],
+        'plumbing' => [
+            'metaLabel' => 'Callout',
+            'keywords' => ['plumb', 'pipe', 'leak', 'drain', 'sewer', 'faucet', 'tap', 'boiler', 'water heater', 'water damage', 'septic', 'burst'],
+            'brand' => ['Pipeworks', 'Flowfix', 'Mainline'],
+            'tagline' => 'Leaks fixed right, the first time',
+            'sub' => 'Licensed plumbers for emergency leaks, boiler installs and full bathroom fit-outs — with a fixed price agreed before we start.',
+            'cta' => 'Book a plumber',
+            'nav' => ['Services', 'Emergency', 'Pricing', 'Areas we cover'],
+            'heroStats' => [['24/7', 'Emergency callout'], ['4.9★', '1,840 reviews'], ['12 yrs', 'Licensed & insured']],
+            'shelf' => 'Most booked jobs',
+            'features' => [['🚿', 'Same-day callouts', 'A plumber at your door inside 90 minutes.'], ['🧾', 'Fixed prices', 'Written quote before any work starts.'], ['🛠️', 'Guaranteed work', '12-month guarantee on every repair.']],
+            'items' => [['Emergency leak repair', 'from $89'], ['Drain unblocking', 'from $75'], ['Boiler service & install', 'from $140'], ['Bathroom fit-out', 'from $1,200'], ['Water heater replacement', 'from $320'], ['Toilet & tap repair', 'from $65']],
+            'chips' => ['All', 'Emergency', 'Leaks', 'Drains', 'Boilers', 'Bathrooms'],
+            'stats' => [['Jobs today', '38', '+6'], ['Avg. response', '46 min', '-8 min'], ['Repeat clients', '68%', '+4%'], ['Revenue', '$8,240', '+11%']],
+            'tableHead' => ['Job', 'Customer', 'Visit', 'Status'],
+            'entity' => 'job',
+        ],
         'services' => [
-            'keywords' => ['laundry', 'dry clean', 'cleaning', 'ironing', 'salon', 'repair', 'plumber', 'electrician', 'maid', 'pickup', 'home service', 'services', 'car wash'],
+            'keywords' => ['laundry', 'dry clean', 'cleaning', 'ironing', 'salon', 'repair', 'electrician', 'maid', 'pickup', 'home service', 'service', 'car wash'],
             'brand' => ['Washly', 'Fixit', 'Tidyhub'],
             'tagline' => 'Chores done, without the hassle',
             'sub' => 'Book trusted local pros for laundry, cleaning and repairs. Pickup and delivery at a time that suits you.',
@@ -203,24 +220,47 @@ class DomainProfiles
 
     public static function forPrompt(string $prompt, ?string $categorySlug = null): array
     {
-        $slug = mb_strtolower((string) $categorySlug);
-        $text = mb_strtolower($prompt).' '.str_replace('-', ' ', $slug);
-        $best = 'generic';
-        $bestScore = 0;
+        [$key, $score] = self::bestMatch(mb_strtolower($prompt));
 
-        foreach (self::PROFILES as $key => $profile) {
-            $score = 0;
-            foreach ($profile['keywords'] as $kw) {
-                if (preg_match('/\\b'.preg_quote($kw, '/').'/u', $text)) {
-                    $score += match (true) {
-                        str_contains($kw, ' ') => 2,
-                        in_array($kw, self::WEAK, true) => 0.5,  // shared across many domains
-                        default => 1,
-                    };
+        // The description decides what the mockup is about. The category picker
+        // only fills in when the description gives us nothing to go on, so a
+        // stale "Social & Community" selection can't hijack a plumbing brief.
+        if ($score === 0.0 && $categorySlug) {
+            $slug = str_replace(['-', ' '], '', mb_strtolower($categorySlug));
+            foreach (self::PROFILES as $candidate => $profile) {
+                if ($candidate !== 'generic' && $slug !== '' && str_contains($slug, $candidate)) {
+                    $key = $candidate;
+                    break;
                 }
             }
-            if ($slug !== '' && str_contains(str_replace('-', '', $slug), $key)) {
-                $score += 3;
+        }
+
+        return ['key' => $key] + self::PROFILES[$key];
+    }
+
+    /**
+     * Best profile for a piece of text, tolerating word forms: "plumbing",
+     * "plumber", "plumbers" all reach the "plumb" keyword, "services" the
+     * "service" keyword.
+     *
+     * @return array{0: string, 1: float}
+     */
+    private static function bestMatch(string $text): array
+    {
+        $best = 'generic';
+        $bestScore = 0.0;
+
+        foreach (self::PROFILES as $key => $profile) {
+            $score = 0.0;
+            foreach ($profile['keywords'] as $kw) {
+                if (! preg_match('/\\b'.preg_quote($kw, '/').'(?:s|es|ing|er|ers|ed)?\\b/u', $text)) {
+                    continue;
+                }
+                $score += match (true) {
+                    str_contains($kw, ' ') => 2,
+                    in_array($kw, self::WEAK, true) => 0.5,  // shared across many domains
+                    default => 1,
+                };
             }
             if ($score > $bestScore) {
                 $best = $key;
@@ -228,6 +268,6 @@ class DomainProfiles
             }
         }
 
-        return ['key' => $best] + self::PROFILES[$best];
+        return [$best, $bestScore];
     }
 }

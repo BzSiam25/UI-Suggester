@@ -4,7 +4,7 @@ import { Pager } from '../components/DesignCard'
 import { Empty } from '../components/Guards'
 import { Download, External } from '../components/Icons'
 import { label, timeAgo, useApi } from '../hooks'
-import { downloadHtml, openHtml, Preview } from './Generate'
+import { DesignNote, downloadHtml, openHtml, Preview } from './Generate'
 
 export default function Showcase() {
   const [page, setPage] = useState(1)
@@ -14,6 +14,7 @@ export default function Showcase() {
     <div className="wrap">
       <div className="page-head">
         <div>
+          <span className="eyebrow">Showcase</span>
           <h1>Community mockups</h1>
           <p>Generated UI ideas that people chose to share. Open one to preview it full size or download the HTML.</p>
         </div>
@@ -55,6 +56,7 @@ export function MockupView() {
     <div className="wrap" style={{ paddingBottom: 40 }}>
       <div className="page-head">
         <div>
+          <span className="eyebrow">Shared mockup</span>
           <h1>{g.prompt}</h1>
           <p>{label(g.platform)} {label(g.screen_type).toLowerCase()} screen in the {g.style} style, shared by {g.user?.name}.</p>
         </div>
@@ -65,7 +67,8 @@ export function MockupView() {
           <Link className="btn" to={`/generate?prompt=${encodeURIComponent(g.prompt)}&platform=${g.platform}&screen_type=${g.screen_type}`}>Remix</Link>
         </div>
       </div>
-      <div className="viewer"><div className="viewer-stage"><Preview generation={g} /></div></div>
+      <DesignNote design={g.design} compact />
+      <div className="viewer" style={{ marginTop: 12 }}><div className="viewer-stage"><Preview generation={g} /></div></div>
     </div>
   )
 }

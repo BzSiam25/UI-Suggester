@@ -12,7 +12,7 @@ export default function Admin() {
   const pending = stats.data?.totals.pending
   return (
     <div className="wrap" style={{ paddingBottom: 40 }}>
-      <div className="page-head"><div><h1>Admin</h1><p>Review uploads, manage people and keep the domain list tidy.</p></div></div>
+      <div className="page-head"><div><span className="eyebrow">Studio control</span><h1>Admin</h1><p>Review uploads, manage people and keep the domain list tidy.</p></div></div>
       <nav className="tabs">
         <NavLink to="/admin" end>Overview</NavLink>
         <NavLink to="/admin/review">Review queue {pending > 0 && <span className="pill">{pending}</span>}</NavLink>

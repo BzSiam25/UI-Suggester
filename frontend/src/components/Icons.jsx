@@ -11,6 +11,7 @@ export const External = (p) => <svg {...base} {...p}><path d="M14 4h6v6M20 4l-9 
 export const Download = (p) => <svg {...base} {...p}><path d="M12 4v12M7 11l5 5 5-5M4 20h16" /></svg>
 export const Menu = (p) => <svg {...base} {...p}><path d="M4 7h16M4 12h16M4 17h16" /></svg>
 export const Trash = (p) => <svg {...base} {...p}><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
+export const Arrow = (p) => <svg {...base} {...p}><path d="M4 12h16M14 6l6 6-6 6" /></svg>
 export const Globe = (p) => <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
 
 export const Logo = (p) => (

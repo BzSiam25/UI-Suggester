@@ -41,10 +41,25 @@ return [
         'max_tokens' => (int) env('ANTHROPIC_MAX_TOKENS', 8000),
     ],
 
+    'exa' => [
+        // Web search that grounds each mockup in real UI references.
+        'key' => env('EXA_API_KEY'),
+        'base_url' => env('EXA_BASE_URL', 'https://api.exa.ai'),
+    ],
+
+    'inspiration' => [
+        // Falls back to a keyless HTML search, then to a curated gallery.
+        'enabled' => (bool) env('INSPIRATION_SEARCH', true),
+        'endpoint' => env('INSPIRATION_ENDPOINT', 'https://html.duckduckgo.com/html/'),
+        'timeout' => (int) env('INSPIRATION_TIMEOUT', 8),
+        'connect_timeout' => (int) env('INSPIRATION_CONNECT_TIMEOUT', 4),
+    ],
+
     'local_ai' => [
         'base_url' => env('LOCAL_AI_BASE_URL', 'http://127.0.0.1:1235/v1'),
         'model' => env('LOCAL_AI_MODEL', 'qwen2.5-coder-7b-instruct'),
         'timeout' => (int) env('LOCAL_AI_TIMEOUT', 180),
+        'max_tokens' => (int) env('LOCAL_AI_MAX_TOKENS', 900),
     ],
 
 ];

@@ -19,6 +19,8 @@ class GenerationResource extends JsonResource
             'style' => $this->style,
             'accent' => $this->accent,
             'provider' => $this->provider,
+            // Art direction, layout recipe and the web references behind the mockup.
+            'design' => $this->meta,
             'is_public' => $this->is_public,
             'is_owner' => $viewer && $viewer->id === $this->user_id,
             // List queries leave out the (large) html column, so only send it when it was selected.

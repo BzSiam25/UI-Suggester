@@ -24,7 +24,7 @@ export function Login() {
   return (
     <div className="auth">
       <form className="panel stack" onSubmit={submit}>
-        <div><h1>Log in</h1><p className="muted">Save designs, join discussions and generate mockups.</p></div>
+        <div><span className="eyebrow">Welcome back</span><h1>Log in</h1><p className="muted">Save designs, join discussions and generate mockups.</p></div>
         {error && <div className="notice bad">{error}</div>}
         <label className="field"><span>Email</span><input className="input" type="email" required autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
         <label className="field"><span>Password</span><input className="input" type="password" required autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
@@ -53,7 +53,7 @@ export function Register() {
   return (
     <div className="auth">
       <form className="panel stack" onSubmit={submit}>
-        <div><h1>Create an account</h1><p className="muted">Free. Share screens, bookmark ideas and generate mockups.</p></div>
+        <div><span className="eyebrow">Join UISpark</span><h1>Create an account</h1><p className="muted">Free. Share screens, bookmark ideas and generate mockups.</p></div>
         {errors._ && !Object.keys(errors).some((k) => k !== '_') && <div className="notice bad">{errors._}</div>}
         <label className="field"><span>Name</span><input className="input" required autoComplete="name" value={form.name} onChange={set('name')} />{err('name')}</label>
         <label className="field"><span>Email</span><input className="input" type="email" required autoComplete="email" value={form.email} onChange={set('email')} />{err('email')}</label>

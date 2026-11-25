@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Pager, Wall } from '../components/DesignCard'
 import { Empty } from '../components/Guards'
+import HeroScene from '../components/HeroScene'
 import { Search } from '../components/Icons'
 import { label, useApi, useMeta } from '../hooks'
 
@@ -38,15 +39,26 @@ export default function Explore() {
   const total = data?.meta?.total
 
   return (
-    <div className="wrap">
+    <>
       <section className="hero">
-        <h1>See how others designed it before you start</h1>
-        <p>Real screens from websites and apps, grouped by domain, platform and screen type. Can't find yours? Generate a mockup for any idea.</p>
-        <label className="search">
-          <span className="sr-only">Search designs</span>
-          <Search />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try “checkout”, “pharmacy” or “dark dashboard”" />
-        </label>
+        <div className="wrap hero-grid">
+          <div className="hero-copy">
+            <span className="eyebrow">UI inspiration library</span>
+            <h1>See how others designed it before you start</h1>
+            <p>Real screens from websites and apps, grouped by domain, platform and screen type. Can't find yours? Generate a mockup for any idea.</p>
+            <label className="search">
+              <span className="sr-only">Search designs</span>
+              <Search />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try “checkout”, “pharmacy” or “dark dashboard”" />
+            </label>
+          </div>
+          <div className="hero-media" aria-hidden="true">
+            <div className="hero-scene"><HeroScene /></div>
+          </div>
+        </div>
+      </section>
+
+      <div className="wrap">
         <div className="domains" role="group" aria-label="Domains">
           <button className="domain" aria-pressed={!filters.category} onClick={() => update({ category: '' })}>All domains</button>
           {meta?.categories.map((c) => (
@@ -55,9 +67,8 @@ export default function Explore() {
             </button>
           ))}
         </div>
-      </section>
 
-      <div className="filters">
+        <div className="filters">
         <div className="segmented" role="group" aria-label="Platform">
           <button aria-pressed={!filters.platform} onClick={() => update({ platform: '' })}>All</button>
           {(meta?.platforms || []).map((p) => <button key={p} aria-pressed={filters.platform === p} onClick={() => toggle('platform', p)}>{label(p)}</button>)}
@@ -97,6 +108,7 @@ export default function Explore() {
           <Pager meta={data?.meta} onPage={(p) => { update({ page: String(p) }); window.scrollTo({ top: 0 }) }} />
         </>
       )}
-    </div>
+      </div>
+    </>
   )
 }

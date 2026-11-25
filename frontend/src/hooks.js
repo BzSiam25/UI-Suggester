@@ -34,6 +34,58 @@ export function useMeta() {
 }
 export const invalidateMeta = () => { metaCache = null }
 
+/**
+ * Scroll reveal: marks matching elements so they fade/slide up as they enter the
+ * viewport. Re-scans on DOM changes so lazily loaded cards animate too.
+ */
+export function useScrollReveal(selectors) {
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const supported = typeof IntersectionObserver !== 'undefined'
+    const seen = new WeakSet()
+    const io = supported && !reduce
+      ? new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return
+            e.target.classList.add('is-in')
+            io.unobserve(e.target)
+          })
+        }, { rootMargin: '0px 0px 10% 0px', threshold: 0.04 })
+      : null
+    const sel = selectors.join(',')
+    let queued = false
+
+    const scan = () => {
+      queued = false
+      document.querySelectorAll(sel).forEach((el) => {
+        if (seen.has(el)) return
+        seen.add(el)
+        if (!io) { el.classList.add('reveal', 'is-in'); return }
+        const siblings = el.parentElement ? [...el.parentElement.children] : []
+        const index = Math.min(Math.max(siblings.indexOf(el), 0), 5)
+        el.style.transitionDelay = `${index * 55}ms`
+        el.classList.add('reveal')
+        // Anything already on screen shows right away; only what is below
+        // the fold waits for the scroll and animates in.
+        if (el.getBoundingClientRect().top < window.innerHeight) {
+          el.classList.add('is-in')
+          return
+        }
+        io.observe(el)
+      })
+    }
+    // setTimeout (not requestAnimationFrame) so the first pass still runs when
+    // the tab is in the background and rAF is paused.
+    const schedule = () => { if (!queued) { queued = true; setTimeout(scan, 16) } }
+
+    scan()
+    const mo = new MutationObserver(schedule)
+    mo.observe(document.body, { childList: true, subtree: true })
+    return () => { mo.disconnect(); io?.disconnect() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+}
+
 export const label = (s = '') => s.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
 
 export function timeAgo(iso) {

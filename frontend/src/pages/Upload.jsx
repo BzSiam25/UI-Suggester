@@ -75,6 +75,7 @@ export default function Upload() {
     <div className="wrap">
       <div className="page-head">
         <div>
+          <span className="eyebrow">Contribute</span>
           <h1>Share a design</h1>
           <p>Upload a screenshot of a website or app screen. {isAdmin ? 'As an admin, it is published right away.' : 'An admin reviews every upload before it appears in the gallery.'}</p>
         </div>
