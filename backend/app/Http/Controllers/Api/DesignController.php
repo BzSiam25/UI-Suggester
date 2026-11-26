@@ -30,7 +30,7 @@ class DesignController extends Controller
             'per_page' => ['nullable', 'integer', 'min:1', 'max:60'],
         ]);
 
-        $query = Design::query()->approved()->with(['category', 'user:id,name']);
+        $query = Design::query()->approved()->with(['category', 'user:id,name,username,avatar_path']);
         $this->applyFilters($query, $request);
         $this->withViewerFlags($query, $request);
 
@@ -54,7 +54,7 @@ class DesignController extends Controller
             $design->increment('views_count');
         }
 
-        $design->load(['category', 'user:id,name', 'tags']);
+        $design->load(['category', 'user:id,name,username,avatar_path', 'tags']);
         $this->attachViewerFlags($design, $request);
 
         return new DesignResource($design);
@@ -66,7 +66,7 @@ class DesignController extends Controller
         $query = Design::query()->approved()
             ->whereKeyNot($design->id)
             ->where(fn ($q) => $q->where('category_id', $design->category_id)->orWhere('screen_type', $design->screen_type))
-            ->with(['category', 'user:id,name'])
+            ->with(['category', 'user:id,name,username,avatar_path'])
             ->orderByRaw('CASE WHEN category_id = ? AND screen_type = ? THEN 0 WHEN category_id = ? THEN 1 ELSE 2 END', [$design->category_id, $design->screen_type, $design->category_id])
             ->orderByDesc('likes_count')
             ->limit(8);
@@ -100,7 +100,7 @@ class DesignController extends Controller
         ]);
         $design->tags()->sync(Tag::idsFromNames($data['tags'] ?? []));
 
-        return (new DesignResource($design->load(['category', 'user:id,name', 'tags'])))
+        return (new DesignResource($design->load(['category', 'user:id,name,username,avatar_path', 'tags'])))
             ->additional(['message' => $design->status === 'approved'
                 ? 'Design published.'
                 : 'Thanks! Your design is waiting for review.'])
@@ -126,7 +126,7 @@ class DesignController extends Controller
             $design->tags()->sync(Tag::idsFromNames($data['tags'] ?? []));
         }
 
-        return new DesignResource($design->load(['category', 'user:id,name', 'tags']));
+        return new DesignResource($design->load(['category', 'user:id,name,username,avatar_path', 'tags']));
     }
 
     public function destroy(Request $request, Design $design): JsonResponse
@@ -141,7 +141,7 @@ class DesignController extends Controller
     /** The signed-in user's own uploads, in every status. */
     public function mine(Request $request)
     {
-        $query = $request->user()->designs()->with(['category', 'user:id,name'])->latest();
+        $query = $request->user()->designs()->with(['category', 'user:id,name,username,avatar_path'])->latest();
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }

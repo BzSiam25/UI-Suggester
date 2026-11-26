@@ -50,10 +50,10 @@ class ApiTest extends TestCase
     public function test_register_and_login_return_tokens(): void
     {
         $this->postJson('/api/auth/register', [
-            'name' => 'Siam', 'email' => 'siam@example.com', 'password' => 'secret123', 'password_confirmation' => 'secret123',
+            'name' => 'Siam', 'email' => 'siam@example.com', 'password' => 'secret#123', 'password_confirmation' => 'secret#123',
         ])->assertCreated()->assertJsonStructure(['user' => ['id', 'name'], 'token']);
 
-        $this->postJson('/api/auth/login', ['email' => 'siam@example.com', 'password' => 'secret123'])
+        $this->postJson('/api/auth/login', ['email' => 'siam@example.com', 'password' => 'secret#123'])
             ->assertOk()->assertJsonStructure(['token']);
 
         $this->postJson('/api/auth/login', ['email' => 'siam@example.com', 'password' => 'wrong'])
@@ -137,29 +137,24 @@ class ApiTest extends TestCase
         $this->assertSame(0, $design->fresh()->comments_count);
     }
 
-    public function test_generator_uses_template_engine_without_api_key(): void
+    public function test_generations_are_private_until_shared(): void
     {
         $user = User::factory()->create();
+        $generation = $user->generations()->create([
+            'prompt' => 'pharmacy delivery app', 'platform' => 'mobile', 'style' => 'modern',
+            'language' => 'javascript', 'framework' => 'react', 'screen_type' => 'home',
+            'screens' => [['slug' => 'home', 'name' => 'Home']], 'provider' => 'local', 'status' => 'done',
+            'html' => '<!DOCTYPE html><html><body>Pharmacy</body></html>',
+            'previews' => [['slug' => 'home', 'name' => 'Home', 'html' => '<!DOCTYPE html><html><body>Pharmacy</body></html>']],
+            'files' => [['path' => 'src/pages/Home.jsx', 'language' => 'javascript', 'content' => 'x']],
+        ]);
+        $id = $generation->id;
 
-        $res = $this->actingAs($user, 'sanctum')->postJson('/api/generations', [
-            'prompt' => 'pharmacy delivery app',
-            'platform' => 'mobile',
-            'screen_type' => 'home',
-            'style' => 'modern',
-            'accent' => '#0d9488',
-        ])->assertCreated();
-
-        $this->assertSame('template', $res->json('data.provider'));
-        $this->assertStringContainsString('<!DOCTYPE html>', $res->json('data.html'));
-        $this->assertStringContainsString('#0d9488', $res->json('data.html'));
-
-        $id = $res->json('data.id');
-        // Private by default
-        $this->app['auth']->forgetGuards();
         $this->getJson("/api/generations/{$id}")->assertNotFound();
+        $this->actingAs($user, 'sanctum')->getJson("/api/generations/{$id}")->assertOk()->assertJsonPath('data.files.0.path', 'src/pages/Home.jsx');
         $this->actingAs($user, 'sanctum')->patchJson("/api/generations/{$id}", ['is_public' => true])->assertOk();
         $this->app['auth']->forgetGuards();
-        $this->getJson('/api/generations/public')->assertJsonCount(1, 'data')->assertJsonMissingPath('data.0.html');
+        $this->getJson('/api/generations/public')->assertJsonCount(1, 'data')->assertJsonMissingPath('data.0.html')->assertJsonMissingPath('data.0.files');
     }
 
     public function test_banned_users_are_blocked(): void

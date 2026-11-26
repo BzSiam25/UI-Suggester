@@ -34,7 +34,7 @@ class DesignResource extends JsonResource
             'is_liked' => (bool) ($this->is_liked ?? false),
             'is_bookmarked' => (bool) ($this->is_bookmarked ?? false),
             'category' => new CategoryResource($this->whenLoaded('category')),
-            'user' => $this->whenLoaded('user', fn () => ['id' => $this->user->id, 'name' => $this->user->name]),
+            'user' => $this->whenLoaded('user', fn () => $this->user->card()),
             'tags' => $this->whenLoaded('tags', fn () => $this->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug])),
             'approved_at' => $this->approved_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),

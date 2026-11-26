@@ -15,7 +15,7 @@ class CommentResource extends JsonResource
             'id' => $this->id,
             'body' => $this->body,
             'parent_id' => $this->parent_id,
-            'user' => ['id' => $this->user->id, 'name' => $this->user->name],
+            'user' => $this->user->card(),
             'can_delete' => $viewer && ($viewer->id === $this->user_id || $viewer->isAdmin()),
             'replies' => CommentResource::collection($this->whenLoaded('replies')),
             'created_at' => $this->created_at?->toIso8601String(),

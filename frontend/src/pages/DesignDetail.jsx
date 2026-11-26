@@ -4,6 +4,7 @@ import { api } from '../api/client'
 import { Wall } from '../components/DesignCard'
 import { Empty } from '../components/Guards'
 import { Bookmark, External, Eye, Heart, Trash } from '../components/Icons'
+import Avatar from '../components/Avatar'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { label, timeAgo, useApi } from '../hooks'
@@ -62,7 +63,7 @@ export default function DesignDetail() {
 
           <div className="stack" style={{ gap: 10 }}>
             <h1>{d.title}</h1>
-            <div className="byline"><span className="avatar">{d.user?.name?.charAt(0)}</span>Shared by {d.user?.name}, {timeAgo(d.approved_at || d.created_at)}</div>
+            <div className="byline">Shared by {d.user && <Link className="author-link" to={`/u/${d.user.username}`}><Avatar user={d.user} size={26} />{d.user.name}</Link>}, {timeAgo(d.approved_at || d.created_at)}</div>
           </div>
 
           {d.description && <p>{d.description}</p>}

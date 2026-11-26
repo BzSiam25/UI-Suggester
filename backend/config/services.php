@@ -35,17 +35,7 @@ return [
         ],
     ],
 
-    'anthropic' => [
-        'key' => env('ANTHROPIC_API_KEY'),
-        'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-5-5'),
-        'max_tokens' => (int) env('ANTHROPIC_MAX_TOKENS', 8000),
-    ],
 
-    'exa' => [
-        // Web search that grounds each mockup in real UI references.
-        'key' => env('EXA_API_KEY'),
-        'base_url' => env('EXA_BASE_URL', 'https://api.exa.ai'),
-    ],
 
     'inspiration' => [
         // Falls back to a keyless HTML search, then to a curated gallery.
@@ -56,10 +46,14 @@ return [
     ],
 
     'local_ai' => [
-        'base_url' => env('LOCAL_AI_BASE_URL', 'http://127.0.0.1:1235/v1'),
+        'base_url' => env('LOCAL_AI_BASE_URL', 'http://127.0.0.1:1234/v1'),
         'model' => env('LOCAL_AI_MODEL', 'qwen2.5-coder-7b-instruct'),
-        'timeout' => (int) env('LOCAL_AI_TIMEOUT', 180),
-        'max_tokens' => (int) env('LOCAL_AI_MAX_TOKENS', 900),
+        // One request can take minutes on a CPU, so be generous.
+        'timeout' => (int) env('LOCAL_AI_TIMEOUT', 900),
+        'plan_tokens' => (int) env('LOCAL_AI_PLAN_TOKENS', 600),
+        'preview_tokens' => (int) env('LOCAL_AI_PREVIEW_TOKENS', 2600),
+        'code_tokens' => (int) env('LOCAL_AI_CODE_TOKENS', 3000),
+        'code_input_chars' => (int) env('LOCAL_AI_CODE_INPUT_CHARS', 9000),
     ],
 
 ];

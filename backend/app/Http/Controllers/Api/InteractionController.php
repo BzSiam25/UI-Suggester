@@ -83,7 +83,7 @@ class InteractionController extends Controller
             ->join('bookmarks', 'bookmarks.design_id', '=', 'designs.id')
             ->where('bookmarks.user_id', $user->id)
             ->select('designs.*', 'bookmarks.collection_id as bookmark_collection_id')
-            ->with(['category', 'user:id,name'])
+            ->with(['category', 'user:id,name,username,avatar_path'])
             ->withExists(['likes as is_liked' => fn ($q) => $q->where('user_id', $user->id)])
             ->orderByDesc('bookmarks.created_at');
 

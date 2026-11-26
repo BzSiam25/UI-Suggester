@@ -1,0 +1,63 @@
+
+/* ------------------------------------------------------- generator: project */
+.qwen-status { display: flex; align-items: flex-start; gap: 9px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 12px; line-height: 1.5; background: #fff; }
+.qwen-status .dot { flex: 0 0 9px; height: 9px; margin-top: 4px; border-radius: 50%; background: #c9372c; box-shadow: 0 0 0 3px rgba(201,55,44,.14); }
+.qwen-status.on .dot { background: #2f9e44; box-shadow: 0 0 0 3px rgba(47,158,68,.15); }
+.qwen-status.off { border-color: #f0c9c4; background: #fff7f5; }
+.qwen-status > span:nth-child(2) { flex: 1; }
+.qwen-status code, .gen-progress code { font-size: 11px; padding: 1px 4px; border-radius: 4px; background: rgba(0,0,0,.05); }
+.link-btn { align-self: flex-start; padding: 0; border: 0; background: none; color: #475b39; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.chip-picker { display: flex; flex-direction: column; gap: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; max-height: 168px; overflow-y: auto; padding: 2px; }
+.chip-wrap { position: relative; display: inline-flex; }
+.chip-wrap .domain { padding-right: 12px; }
+.chip-wrap .domain.custom { border-style: dashed; }
+.chip-wrap .domain:disabled { opacity: .4; cursor: not-allowed; }
+.chip-wrap .domain .count { margin-left: 6px; }
+.chip-x { position: absolute; top: -6px; right: -6px; display: grid; place-items: center; width: 16px; height: 16px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--slate); font-size: 11px; line-height: 1; cursor: pointer; }
+.chip-x:hover { color: #c9372c; border-color: #c9372c; }
+.chip-add { display: flex; gap: 6px; margin-top: 6px; }
+.chip-add .input { flex: 1; height: 34px; font-size: 12px; }
+.gen-progress { display: flex; flex-direction: column; gap: 10px; margin: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.gen-progress .bar { height: 8px; border-radius: 99px; background: #eceae2; overflow: hidden; }
+.gen-progress .bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7e916c, #c2d36a); transition: width .6s ease; }
+.gen-log { margin: 0; padding-left: 18px; font-size: 11.5px; line-height: 1.7; }
+.result-tabs { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 12px 14px 0; }
+.result-tabs .tabs { display: flex; gap: 20px; margin: 0; overflow: visible; border: 0; }
+.result-tabs .tabs button { padding: 8px 0; border: 0; border-bottom: 2px solid transparent; background: none; font: inherit; font-size: 12px; font-weight: 600; color: var(--slate); cursor: pointer; }
+.result-tabs .tabs button.active { color: var(--ink); border-bottom-color: var(--ink); }
+.result-tabs .tabs button:disabled { opacity: .45; cursor: default; }
+.screen-tabs { flex-wrap: wrap; }
+.code-view { display: grid; grid-template-columns: minmax(170px, 240px) minmax(0, 1fr); margin: 12px 14px 14px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; min-height: 420px; }
+.file-list { display: flex; flex-direction: column; max-height: 640px; overflow-y: auto; padding: 6px; border-right: 1px solid var(--line); background: #faf9f5; }
+.file-btn { padding: 7px 9px; border: 0; border-radius: 7px; background: none; font: 500 11.5px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-align: left; color: var(--ink); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-btn:hover { background: #f0eee6; }
+.file-btn[aria-selected='true'] { background: var(--olive); color: #f8f4e6; }
+.file-btn[aria-selected='true'] .muted { color: rgba(248,244,230,.6); }
+.code-pane { display: flex; flex-direction: column; min-width: 0; }
+.code-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 11.5px; }
+.code-bar .spacer { flex: 1; }
+pre.code { flex: 1; margin: 0; max-height: 640px; overflow: auto; padding: 14px 16px; background: #15170f; color: #e8ead9; font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; white-space: pre; }
+.swatch-dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); }
+.how-list { max-width: 380px; margin: 14px auto 0; padding-left: 20px; text-align: left; font-size: 12.5px; line-height: 1.9; color: var(--slate); }
+.clamp-1 { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pill.status-failed { background: #fbe4e1; color: #a1271c; }
+.pill.status-running, .pill.status-pending { background: #eef2e7; color: #475b39; }
+@media (max-width: 860px) {
+  .code-view { grid-template-columns: 1fr; }
+  .file-list { max-height: 180px; border-right: 0; border-bottom: 1px solid var(--line); }
+}
+
+/* Generator layout: the form has many fields, so it gets a wider column and scrolls
+   with the page; the empty preview box stays in view instead. */
+.wrap > .gen { grid-template-columns: minmax(380px, 440px) minmax(0, 1fr); }
+.wrap > .gen .gen-form { position: static; min-width: 0; }
+.wrap > .gen .viewer.is-empty { position: sticky; top: 78px; min-height: min(560px, calc(100vh - 110px)); }
+.gen-form .row > .field { min-width: 0; }
+.gen-form .select { width: 100%; min-width: 0; text-overflow: ellipsis; }
+.gen-form .gen-ideas { justify-content: flex-start; align-items: center; margin-top: 8px; }
+.gen-ideas .domain { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .wrap > .gen { grid-template-columns: 1fr; }
+  .wrap > .gen .viewer.is-empty { position: static; min-height: 360px; }
+}

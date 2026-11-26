@@ -49,7 +49,7 @@ class AdminController extends Controller
                 ->map(fn ($c) => ['name' => $c->name, 'icon' => $c->icon, 'count' => $c->designs_count]),
             'by_platform' => Design::approved()->selectRaw('platform, COUNT(*) as count')->groupBy('platform')->pluck('count', 'platform'),
             'top_designs' => DesignResource::collection(
-                Design::approved()->with(['category', 'user:id,name'])->orderByDesc('likes_count')->limit(5)->get()
+                Design::approved()->with(['category', 'user:id,name,username,avatar_path'])->orderByDesc('likes_count')->limit(5)->get()
             ),
         ]);
     }
@@ -60,7 +60,7 @@ class AdminController extends Controller
     {
         $request->validate(['status' => ['nullable', Rule::in(['pending', 'approved', 'rejected'])]]);
 
-        $query = Design::query()->with(['category', 'user:id,name', 'tags']);
+        $query = Design::query()->with(['category', 'user:id,name,username,avatar_path', 'tags']);
         if ($status = $request->input('status', 'pending')) {
             $query->where('status', $status);
         }
@@ -77,7 +77,7 @@ class AdminController extends Controller
     {
         $design->update(['status' => 'approved', 'rejection_reason' => null, 'approved_at' => $design->approved_at ?? now()]);
 
-        return new DesignResource($design->load(['category', 'user:id,name', 'tags']));
+        return new DesignResource($design->load(['category', 'user:id,name,username,avatar_path', 'tags']));
     }
 
     public function reject(Request $request, Design $design): DesignResource
@@ -85,7 +85,7 @@ class AdminController extends Controller
         $data = $request->validate(['reason' => ['required', 'string', 'max:255']]);
         $design->update(['status' => 'rejected', 'rejection_reason' => $data['reason']]);
 
-        return new DesignResource($design->load(['category', 'user:id,name', 'tags']));
+        return new DesignResource($design->load(['category', 'user:id,name,username,avatar_path', 'tags']));
     }
 
     // ------------------------------------------------------------------ users

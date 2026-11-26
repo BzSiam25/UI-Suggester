@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\DesignController;
 use App\Http\Controllers\Api\GenerationController;
 use App\Http\Controllers\Api\InteractionController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,10 @@ Route::get('designs/{design}', [DesignController::class, 'show']);
 Route::get('designs/{design}/similar', [DesignController::class, 'similar']);
 Route::get('designs/{design}/comments', [CommentController::class, 'index']);
 
+Route::get('users/{username}', [ProfileController::class, 'show']);
+Route::get('users/{username}/designs', [ProfileController::class, 'designs']);
+Route::get('users/{username}/projects', [ProfileController::class, 'projects']);
+
 Route::get('generator/options', [GenerationController::class, 'options']);
 Route::get('generations/public', [GenerationController::class, 'publicIndex']);
 Route::get('generations/{generation}', [GenerationController::class, 'show'])->whereNumber('generation');
@@ -36,7 +41,10 @@ Route::get('generations/{generation}/raw', [GenerationController::class, 'raw'])
 // ----------------------------------------------------------- signed in
 Route::middleware(['auth:sanctum', 'not_banned'])->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
-    Route::put('auth/profile', [AuthController::class, 'updateProfile']);
+    Route::put('auth/profile', [ProfileController::class, 'update']);
+    Route::put('auth/password', [ProfileController::class, 'password'])->middleware('throttle:10,1');
+    Route::post('auth/avatar', [ProfileController::class, 'avatar'])->middleware('throttle:20,1');
+    Route::delete('auth/avatar', [ProfileController::class, 'removeAvatar']);
     Route::post('auth/logout', [AuthController::class, 'logout']);
 
     Route::get('my/designs', [DesignController::class, 'mine']);
@@ -56,6 +64,9 @@ Route::middleware(['auth:sanctum', 'not_banned'])->group(function () {
     Route::delete('comments/{comment}', [CommentController::class, 'destroy']);
 
     Route::post('generations', [GenerationController::class, 'store'])->middleware('throttle:10,1');
+    Route::post('generations/{generation}/retry', [GenerationController::class, 'retry'])->middleware('throttle:10,1');
+    Route::post('generator/options', [GenerationController::class, 'storeOption'])->middleware('throttle:30,1');
+    Route::delete('generator/options/{option}', [GenerationController::class, 'destroyOption']);
     Route::get('my/generations', [GenerationController::class, 'mine']);
     Route::patch('generations/{generation}', [GenerationController::class, 'update']);
     Route::delete('generations/{generation}', [GenerationController::class, 'destroy']);

@@ -58,7 +58,7 @@ export function MockupView() {
         <div>
           <span className="eyebrow">Shared mockup</span>
           <h1>{g.prompt}</h1>
-          <p>{label(g.platform)} {label(g.screen_type).toLowerCase()} screen in the {g.style} style, shared by {g.user?.name}.</p>
+          <p>{label(g.platform)} {label(g.screen_type).toLowerCase()} screen in the {g.style} style, shared by {g.user ? <Link to={`/u/${g.user.username}`}>{g.user.name}</Link> : 'someone'}.</p>
         </div>
         <span className="spacer" />
         <div className="row">

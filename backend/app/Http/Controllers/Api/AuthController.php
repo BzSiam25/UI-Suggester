@@ -18,7 +18,7 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:80'],
             'email' => ['required', 'email', 'max:190', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', Password::min(8)->symbols()],
         ]);
 
         $user = User::create($data);
@@ -54,25 +54,6 @@ class AuthController extends Controller
     public function me(Request $request): UserResource
     {
         return new UserResource($request->user()->loadCount('designs'));
-    }
-
-    public function updateProfile(Request $request): UserResource
-    {
-        $user = $request->user();
-        $data = $request->validate([
-            'name' => ['sometimes', 'required', 'string', 'max:80'],
-            'bio' => ['nullable', 'string', 'max:280'],
-            'current_password' => ['required_with:password', 'current_password:sanctum'],
-            'password' => ['nullable', 'confirmed', Password::min(8)],
-        ]);
-
-        unset($data['current_password']);
-        if (empty($data['password'])) {
-            unset($data['password']);
-        }
-        $user->update($data);
-
-        return new UserResource($user);
     }
 
     public function logout(Request $request): JsonResponse

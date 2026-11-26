@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { Pager } from '../components/DesignCard'
+import Avatar from '../components/Avatar'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { timeAgo, useApi } from '../hooks'
@@ -36,9 +37,9 @@ function CommentItem({ c, slug, onDelete, onReply }) {
   const [replying, setReplying] = useState(false)
   return (
     <div className="comment">
-      <span className="avatar">{c.user.name.charAt(0)}</span>
+      <Link to={`/u/${c.user.username}`} aria-label={c.user.name}><Avatar user={c.user} size={31} /></Link>
       <div className="comment-body">
-        <header><strong>{c.user.name}</strong><span className="muted small">{timeAgo(c.created_at)}</span></header>
+        <header><Link className="author-link" to={`/u/${c.user.username}`}><strong>{c.user.name}</strong></Link><span className="muted small">{timeAgo(c.created_at)}</span></header>
         <p>{c.body}</p>
         <div className="row" style={{ gap: 14 }}>
           {user && !c.parent_id && <button className="link-btn" onClick={() => setReplying((r) => !r)}>Reply</button>}

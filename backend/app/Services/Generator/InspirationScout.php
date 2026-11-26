@@ -12,7 +12,7 @@ use Throwable;
  * like "plumbing service website" is grounded in how those sites actually
  * look instead of one fixed internal template.
  *
- * Uses a keyless HTML search endpoint, caches results for a few hours and
+ * Uses a keyless HTML search endpoint (no API key), caches results for a few hours and
  * falls back to a curated reference board when the network is unavailable.
  */
 class InspirationScout
@@ -72,6 +72,143 @@ class InspirationScout
         return ['query' => $query, 'source' => $source, 'references' => $references];
     }
 
+    /**
+     * Research for a multi-screen project: the search phrase comes from the
+     * domains and screens the user picked plus the brief, and the top pages
+     * are opened to collect concrete interface ideas for the model.
+     *
+     * @param  array<int, string>  $screens  @param  array<int, string>  $domains
+     * @return array{query: string, source: string, references: array<int, array<string, mixed>>, ideas: string}
+     */
+    public function researchProject(string $prompt, string $platform, array $screens, array $domains): array
+    {
+        $focus = trim(implode(' ', array_slice($domains, 0, 2)).' '.implode(' ', array_slice($screens, 0, 2)));
+        $board = $this->research(trim($focus.' '.$prompt), $platform);
+        $board['ideas'] = $board['source'] === 'live' || $board['source'] === 'cache'
+            ? $this->study($board['references'])
+            : '';
+
+        return $board;
+    }
+
+    /**
+     * Opens a few reference pages and writes down what they show: headings,
+     * navigation, calls to action, colours and fonts. Pages are read, never
+     * copied: the notes go to the model as inspiration only.
+     *
+     * @param  array<int, array<string, mixed>>  $references
+     */
+    public function study(array &$references, int $pages = 3): string
+    {
+        $notes = [];
+
+        foreach (array_slice(array_keys($references), 0, $pages) as $i) {
+            $url = (string) ($references[$i]['url'] ?? '');
+            $key = 'inspiration:page:'.md5($url);
+
+            try {
+                $found = Cache::get($key);
+            } catch (Throwable) {
+                $found = null;
+            }
+
+            if (! is_array($found)) {
+                $found = $this->read($url);
+                try {
+                    Cache::put($key, $found, now()->addHours(12));
+                } catch (Throwable) {
+                }
+            }
+
+            if ($found === []) {
+                continue;
+            }
+
+            $references[$i]['ideas'] = $found;
+            $line = '- '.($references[$i]['source'] ?? $url).':';
+            foreach (['headings' => 'headings', 'nav' => 'navigation', 'actions' => 'buttons', 'colors' => 'colours', 'fonts' => 'fonts'] as $field => $label) {
+                if (! empty($found[$field])) {
+                    $line .= " {$label}: ".implode(', ', $found[$field]).';';
+                }
+            }
+            $notes[] = $line;
+        }
+
+        return implode("\n", $notes);
+    }
+
+    /** @return array<string, array<int, string>> */
+    private function read(string $url): array
+    {
+        if (! filter_var($url, FILTER_VALIDATE_URL) || ! str_starts_with($url, 'http')) {
+            return [];
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+                'Accept' => 'text/html',
+            ])->connectTimeout(4)->timeout(8)->get($url);
+
+            if (! $response->successful() || ! str_contains(strtolower($response->header('Content-Type')), 'html')) {
+                return [];
+            }
+            $html = substr($response->body(), 0, 400_000);
+        } catch (Throwable) {
+            return [];
+        }
+
+        $text = fn (string $s) => trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($s), ENT_QUOTES | ENT_HTML5)) ?? '');
+        $pick = function (string $pattern, int $limit, int $max = 60) use ($html, $text) {
+            preg_match_all($pattern, $html, $m);
+            $out = [];
+            foreach ($m[1] ?? [] as $raw) {
+                $t = $text($raw);
+                if ($t !== '' && mb_strlen($t) <= $max && ! in_array($t, $out, true)) {
+                    $out[] = $t;
+                }
+                if (count($out) >= $limit) {
+                    break;
+                }
+            }
+
+            return $out;
+        };
+
+        $nav = [];
+        if (preg_match('/<nav\b.*?<\/nav>/is', $html, $navBlock)) {
+            preg_match_all('/<a\b[^>]*>(.*?)<\/a>/is', $navBlock[0], $links);
+            foreach ($links[1] as $raw) {
+                $t = $text($raw);
+                if ($t !== '' && mb_strlen($t) <= 24 && ! in_array($t, $nav, true)) {
+                    $nav[] = $t;
+                }
+                if (count($nav) >= 8) {
+                    break;
+                }
+            }
+        }
+
+        preg_match_all('/#([0-9a-f]{6})\b/i', $html, $hex);
+        $colors = collect($hex[1] ?? [])->map(fn ($c) => '#'.strtolower($c))
+            ->reject(fn ($c) => in_array($c, ['#ffffff', '#000000'], true))
+            ->countBy()->sortDesc()->keys()->take(5)->values()->all();
+
+        preg_match_all('/font-family\s*:\s*[\'"]?([A-Za-z][A-Za-z0-9 ]{2,30})/i', $html, $fonts);
+        $fonts = collect($fonts[1] ?? [])->map(fn ($f) => trim($f))
+            ->reject(fn ($f) => in_array(strtolower($f), ['inherit', 'sans serif', 'serif', 'system ui', 'arial', 'helvetica', 'monospace'], true))
+            ->unique()->take(3)->values()->all();
+
+        return array_filter([
+            'title' => array_filter([$text(preg_match('/<title[^>]*>(.*?)<\/title>/is', $html, $t) ? $t[1] : '')]),
+            'headings' => $pick('/<h[1-3]\b[^>]*>(.*?)<\/h[1-3]>/is', 6, 80),
+            'nav' => $nav,
+            'actions' => $pick('/<(?:button|a)\b[^>]*class="[^"]*(?:btn|button|cta)[^"]*"[^>]*>(.*?)<\/(?:button|a)>/is', 5, 30),
+            'colors' => $colors,
+            'fonts' => $fonts,
+        ]);
+    }
+
     /** Search phrasing built from the brief's own words, so it follows the prompt. */
     public function query(string $prompt, string $platform = 'web'): string
     {
@@ -85,23 +222,18 @@ class InspirationScout
     }
 
     /**
-     * Searches through a keyed API when one is configured (Exa is the default
-     * provider), then a keyless HTML search endpoint as a fallback.
+     * Keyless web search (no API key, no paid service): DuckDuckGo's HTML
+     * endpoint first, its lite endpoint as a second try.
      *
      * @return array{0: array<int, array{title: string, url: string, source: string}>, 1: string}
      */
     private function search(string $query): array
     {
-        $exaKey = (string) config('services.exa.key', '');
-
-        if ($exaKey !== '') {
-            $results = $this->searchExa($exaKey, $query);
-            if ($results !== []) {
-                return [$results, 'live'];
-            }
-        }
-
         $results = $this->searchDuckDuckGo($query);
+
+        if ($results === []) {
+            $results = $this->searchDuckDuckGo($query, 'https://lite.duckduckgo.com/lite/');
+        }
 
         return [$results, $results === [] ? 'curated' : 'live'];
     }
@@ -109,50 +241,7 @@ class InspirationScout
     /**
      * @return array<int, array{title: string, url: string, source: string}>
      */
-    private function searchExa(string $key, string $query): array
-    {
-        try {
-            $response = Http::withHeaders(['x-api-key' => $key, 'Content-Type' => 'application/json'])
-                ->connectTimeout((int) config('services.inspiration.connect_timeout', 4))
-                ->timeout((int) config('services.inspiration.timeout', 8))
-                ->post(rtrim((string) config('services.exa.base_url', 'https://api.exa.ai'), '/').'/search', [
-                    'query' => $query,
-                    'numResults' => 6,
-                    'type' => 'auto',
-                    'contents' => ['text' => false, 'highlights' => false],
-                ]);
-
-            if (! $response->successful()) {
-                Log::info('Exa inspiration search returned '.$response->status());
-
-                return [];
-            }
-
-            $references = [];
-            foreach ($response->json('results', []) as $result) {
-                $url = (string) ($result['url'] ?? '');
-                if ($url === '' || $this->isNoise($url)) {
-                    continue;
-                }
-                $references[] = [
-                    'title' => trim((string) ($result['title'] ?? $url)),
-                    'url' => $url,
-                    'source' => (string) parse_url($url, PHP_URL_HOST),
-                ];
-            }
-
-            return array_slice($references, 0, 6);
-        } catch (Throwable $e) {
-            Log::info('Exa inspiration search failed', ['error' => $e->getMessage()]);
-
-            return [];
-        }
-    }
-
-    /**
-     * @return array<int, array{title: string, url: string, source: string}>
-     */
-    private function searchDuckDuckGo(string $query): array
+    private function searchDuckDuckGo(string $query, ?string $endpoint = null): array
     {
         try {
             $response = Http::withHeaders([
@@ -161,7 +250,7 @@ class InspirationScout
             ])
                 ->connectTimeout((int) config('services.inspiration.connect_timeout', 4))
                 ->timeout((int) config('services.inspiration.timeout', 8))
-                ->get((string) config('services.inspiration.endpoint', 'https://html.duckduckgo.com/html/'), ['q' => $query]);
+                ->get($endpoint ?? (string) config('services.inspiration.endpoint', 'https://html.duckduckgo.com/html/'), ['q' => $query]);
 
             if (! $response->successful()) {
                 Log::info('UI inspiration search returned '.$response->status());
@@ -184,7 +273,8 @@ class InspirationScout
     {
         $found = [];
 
-        if (! preg_match_all('/<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/is', $html, $rows, PREG_SET_ORDER)) {
+        if (! preg_match_all('/<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/is', $html, $rows, PREG_SET_ORDER)
+            && ! preg_match_all('/<a[^>]*href="([^"]+)"[^>]*class=[\'"][^\'"]*result-link[^\'"]*[\'"][^>]*>(.*?)<\/a>/is', $html, $rows, PREG_SET_ORDER)) {
             return [];
         }
 

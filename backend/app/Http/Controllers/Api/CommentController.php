@@ -19,7 +19,7 @@ class CommentController extends Controller
 
         $comments = $design->comments()
             ->whereNull('parent_id')
-            ->with(['user:id,name', 'replies.user:id,name'])
+            ->with(['user:id,name,username,avatar_path', 'replies.user:id,name,username,avatar_path'])
             ->latest()
             ->paginate(20);
 
@@ -49,7 +49,7 @@ class CommentController extends Controller
             return $comment;
         });
 
-        $comment->load('user:id,name')->setRelation('replies', collect());
+        $comment->load('user:id,name,username,avatar_path')->setRelation('replies', collect());
 
         return (new CommentResource($comment))->response()->setStatusCode(201);
     }

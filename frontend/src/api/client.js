@@ -1,4 +1,4 @@
-const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/$/, '')
+const BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 const TOKEN_KEY = 'uispark_token'
 
 export const tokenStore = {
@@ -17,7 +17,7 @@ export class ApiError extends Error {
 
 /** Small fetch wrapper: JSON in/out, bearer token, FormData passthrough. */
 export async function api(path, { method = 'GET', body, params, signal } = {}) {
-  const url = new URL(BASE + path)
+  const url = new URL(BASE + path, window.location.origin)
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v)

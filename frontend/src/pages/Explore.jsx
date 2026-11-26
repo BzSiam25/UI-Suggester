@@ -43,22 +43,33 @@ export default function Explore() {
       <section className="hero">
         <div className="wrap hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">UI inspiration library</span>
-            <h1>See how others designed it before you start</h1>
-            <p>Real screens from websites and apps, grouped by domain, platform and screen type. Can't find yours? Generate a mockup for any idea.</p>
+            <span className="hero-kicker"><span /> Your next great interface starts here</span>
+            <h1>Good design starts with a little inspiration.</h1>
+            <p>Explore real screens from websites and apps. Find ideas by industry, device or screen type, then create a mockup of your own.</p>
             <label className="search">
               <span className="sr-only">Search designs</span>
               <Search />
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try “checkout”, “pharmacy” or “dark dashboard”" />
             </label>
+            <div className="hero-actions">
+              <Link to="/generate" className="btn hero-primary">Generate a mockup <span aria-hidden="true">↗</span></Link>
+              <a href="#design-library" className="hero-secondary">Explore the library <span aria-hidden="true">↓</span></a>
+            </div>
+            <div className="hero-note"><span className="hero-note-dot" /> Inspiration for web, mobile and tablet</div>
           </div>
           <div className="hero-media" aria-hidden="true">
             <div className="hero-scene"><HeroScene /></div>
+            <div className="hero-float hero-float-top"><span className="hero-float-icon">✳</span><span><strong>Fresh ideas</strong><small>Ready to explore</small></span></div>
+            <div className="hero-float hero-float-bottom"><span className="hero-float-swatch" /><span><strong>Find your style</strong><small>Browse real interfaces</small></span></div>
           </div>
         </div>
       </section>
 
-      <div className="wrap">
+      <div className="wrap" id="design-library">
+        <div className="library-heading">
+          <div><span className="eyebrow">Explore the collection</span><h2>Find a screen to spark your next idea.</h2></div>
+          <span className="library-subtitle">Browse by domain, device and visual style</span>
+        </div>
         <div className="domains" role="group" aria-label="Domains">
           <button className="domain" aria-pressed={!filters.category} onClick={() => update({ category: '' })}>All domains</button>
           {meta?.categories.map((c) => (

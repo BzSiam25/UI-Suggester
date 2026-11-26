@@ -36,6 +36,8 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        $this->call(GeneratorOptionSeeder::class);
+
         foreach (self::CATEGORIES as $i => [$name, $icon, $desc]) {
             Category::updateOrCreate(['slug' => Str::slug($name)], ['name' => $name, 'icon' => $icon, 'description' => $desc, 'sort_order' => $i]);
         }

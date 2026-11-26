@@ -26,19 +26,19 @@ UISpark is a two-part application:
 
 - **A community gallery of real UI screens** — browse by domain, platform, screen type and colour,
   filter and search, like, bookmark into collections, and discuss in threaded comments.
-- **A mockup generator** — give it a prompt, get a working page you can preview, open, download
-  and share. Every run starts with a web lookup for interface references and then picks a fresh
-  art direction, so the same prompt does not return the same page twice.
+- **A UI + code generator** — pick a language and framework, the screens and the domain (or add
+  your own), describe the product, and a **Qwen model running on your own computer** researches
+  similar products on the web, designs every screen and writes the code files. Preview each screen,
+  read the code, and download the project as a ZIP.
 
-No API keys are required to run it: the built-in template engine composes mockups offline.
-Add a local model or a Claude key to have a model design them instead.
+No AI API keys are used: the model runs locally (LM Studio or Ollama) and web research is keyless.
 
 ## Features
 
 | Area | Highlights |
 |---|---|
 | **Explore** | Gallery of approved screens, filtered by domain, platform (web/mobile/tablet), screen type, dominant colour, tag; sorts for latest, trending, popular and most viewed |
-| **Generator** | Research → art direction → layout composition; 18 screen types, 6 visual styles, 8 design languages; returns a self-contained HTML page plus the design brief that produced it |
+| **Generator** | Local Qwen only. Languages, frameworks, screens and domains come from the database and users can add their own; up to 8 screens per run; web research → plan → HTML preview per screen → framework code → routing/config/README; queued with live progress, retry and ZIP download |
 | **Community** | Upload screenshots (moderated before publication), likes, bookmarks with named collections, one-level threaded comments, tags created on the fly |
 | **Colour extraction** | Palettes sampled from every upload with GD, merged perceptually, named into colour families for filtering, shown as click-to-copy swatches |
 | **Accounts** | Token auth via Sanctum, profile editing, role-based admin access, user suspension |
@@ -51,37 +51,32 @@ Add a local model or a Claude key to have a model design them instead.
 |---|---|
 | API | PHP 8.2+, Laravel 12, Sanctum, MySQL 8 (SQLite in tests) |
 | Web app | React 18, React Router 6, Vite 5, hand-written CSS |
-| Generation | Pluggable provider: local OpenAI-compatible server (Qwen), Anthropic Claude, or the built-in PHP template engine |
-| Research | Exa Search API when a key is configured, keyless HTML search otherwise, curated reference gallery as the last resort |
+| Generation | Qwen on a local OpenAI-compatible server (LM Studio / Ollama), run by a Laravel queue worker |
+| Research | Keyless DuckDuckGo search; the top pages are read for headings, navigation, buttons, colours and fonts |
 
 ## How generation works
 
 ```mermaid
 flowchart LR
-    A["Prompt + platform<br/>+ screen + style"] --> B["InspirationScout<br/><em>web research</em>"]
-    B --> C["DesignDirection<br/><em>seeded art direction</em>"]
-    C --> D{Provider}
-    D -->|"LOCAL_AI_BASE_URL set"| E["Local model<br/>(OpenAI-compatible /v1)"]
-    D -->|"ANTHROPIC_API_KEY set"| F["Claude"]
-    D -->|"otherwise, or on failure"| G["TemplateEngine<br/><em>offline composer</em>"]
-    E --> H["HTML mockup<br/>+ design brief"]
-    F --> H
-    G --> H
-    H --> I[("ui_generations")]
+    A["Language + framework<br/>screens + domains<br/>requirements"] --> B["POST /api/generations<br/><em>queued</em>"]
+    B --> C["InspirationScout<br/><em>web search + page study</em>"]
+    C --> D["Qwen: plan<br/><em>brand, palette, screen contents</em>"]
+    D --> E["Qwen: HTML preview<br/><em>per screen</em>"]
+    E --> F["Qwen: framework code<br/><em>per screen</em>"]
+    F --> G["ProjectScaffold<br/><em>router, config, README</em>"]
+    G --> H[("ui_generations<br/>previews + files")]
 ```
 
-1. **Research** — `InspirationScout` turns the prompt into a search query, asks Exa (or a keyless
-   endpoint) for real UI references, caches the board for six hours, and falls back to a curated
-   gallery when the network is unavailable.
-2. **Direction** — `DesignDirection` seeds an art direction from the prompt: one of eight design
-   languages (editorial, Swiss, quiet minimal, soft SaaS, console, glass neon, pop, craft), plus
-   typography, radius, accent and a layout recipe. The recipe shuffles hero, proof, benefits,
-   showcase, closing and footer variants, so repeated prompts diverge.
-3. **Composition** — the direction and the reference board become a design brief. A configured
-   model writes the page; if it fails, `TemplateEngine` composes the same direction in PHP and the
-   response carries a notice explaining the fallback.
-4. **Persistence** — the HTML and a `meta.design` payload (direction, recipe, research source and
-   references) are stored, so the UI can show what inspired each result.
+1. **Queue** — the request is validated against `generator_options` and queued; the browser polls
+   `GET /api/generations/{id}` and shows each step.
+2. **Research** — `InspirationScout` searches the web for the chosen domains and screens and opens
+   the top pages to note their headings, navigation, calls to action, colours and fonts.
+3. **Plan** — Qwen fixes an original brand, palette, font and what every screen contains.
+4. **Design** — Qwen writes a self-contained HTML preview for each screen.
+5. **Code** — Qwen rewrites each preview in the chosen framework (`FrameworkCatalog` holds file
+   layouts and rules; user-added frameworks get generic rules). For HTML/Tailwind/Bootstrap the
+   preview is the code.
+6. **Scaffold** — `ProjectScaffold` adds the entry point, router, package/config files and a README.
 
 Details and extension points: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -170,23 +165,19 @@ Only the database values are required; everything below is optional.
 | `APP_URL` | `http://localhost:8000` | API origin |
 | `FRONTEND_URL` | `http://localhost:5173` | Allowed CORS origin |
 | `DB_CONNECTION` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | `mysql` / `uispark` / `root` / – | Database |
-| `ANTHROPIC_API_KEY` | – | Enables Claude as a design provider |
-| `ANTHROPIC_MODEL` | `claude-sonnet-5-5` | Model id for Claude |
-| `ANTHROPIC_MAX_TOKENS` | `8000` | Response budget for Claude |
-| `LOCAL_AI_BASE_URL` | `http://127.0.0.1:1235/v1` | OpenAI-compatible endpoint for a local model; takes priority over Claude |
+| `LOCAL_AI_BASE_URL` | `http://127.0.0.1:1234/v1` | OpenAI-compatible endpoint of the local model (must be localhost / private) |
 | `LOCAL_AI_MODEL` | `qwen2.5-coder-7b-instruct` | Model identifier to request |
-| `LOCAL_AI_TIMEOUT` | `180` | Request timeout in seconds |
-| `LOCAL_AI_MAX_TOKENS` | `900` | Response budget; small CPU-bound models need a compact page |
-| `EXA_API_KEY` | – | Enables live web research for references |
-| `EXA_BASE_URL` | `https://api.exa.ai` | Exa endpoint |
-| `INSPIRATION_SEARCH` | `true` | Set `false` to skip research and use the curated board |
+| `LOCAL_AI_TIMEOUT` | `900` | Seconds per model request |
+| `LOCAL_AI_PLAN_TOKENS` / `LOCAL_AI_PREVIEW_TOKENS` / `LOCAL_AI_CODE_TOKENS` | `600` / `2600` / `3000` | Response budget per step |
+| `INSPIRATION_SEARCH` | `true` | Set `false` to skip web research |
 | `INSPIRATION_TIMEOUT` | `8` | Research request timeout (seconds) |
 
-Frontend: `VITE_API_URL` (default `http://localhost:8000/api`).
+Frontend: `VITE_API_URL` (default `/api`, proxied by Vite to `http://127.0.0.1:8000`).
 
-To use a local model, serve any OpenAI-compatible API and set `LOCAL_AI_BASE_URL` — for example
-LM Studio on port 1235 with `qwen2.5-coder-3b-instruct` loaded. Generation runs on CPU without a
-GPU, so expect roughly three minutes per page and prefer the template engine when latency matters.
+**Running the generator:** in LM Studio open *Developer → Local Server*, switch the server on
+(port 1234) and load the Qwen model; then run `php artisan queue:work --timeout=0` (or
+`start-dev.bat` on Windows, which also runs migrations and starts the API and the web app).
+On a CPU a 3B model needs roughly 3–8 minutes per screen and step; a 7B model on a GPU is much faster.
 
 ## Quality checks
 
