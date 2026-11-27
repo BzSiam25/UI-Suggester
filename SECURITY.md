@@ -47,8 +47,8 @@ Out of scope:
 - Change or delete the seeded `admin@uispark.test` and `demo@uispark.test` accounts.
 - Set `APP_ENV=production`, `APP_DEBUG=false` and a fresh `APP_KEY`.
 - Serve the API over HTTPS and restrict `FRONTEND_URL` (CORS) to your real origin.
-- Keep `ANTHROPIC_API_KEY`, `EXA_API_KEY` and database credentials in the environment, never in the
-  repository or the built frontend bundle.
+- Keep `LOCAL_AI_BASE_URL` pointed at a loopback or private address and keep database credentials in
+  the environment, never in the repository or the built frontend bundle.
 - Run `php artisan storage:link` and ensure `backend/storage` is not publicly listable beyond the
   linked `public/storage` directory.
 - Review the rate limits in `routes/api.php` for your traffic, and put a proxy in front if you need

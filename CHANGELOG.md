@@ -6,17 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- ESLint 9 configuration (`frontend/eslint.config.js`) and `npm run lint` script, wired into GitHub Actions CI.
+
 ### Fixed
 
 - `composer.lock` required PHP 8.4 (Symfony 8 packages) although the project supports PHP 8.2+;
   Composer now resolves for PHP 8.2 (`config.platform.php`), so CI passes on PHP 8.2 and 8.3.
 - `php artisan test` failed because the empty `tests/Unit` directory was not committed.
 - Code style (Pint) violations in `ProfileController`, `ProjectScaffold` and `config/services.php`.
+- Removed leftover `backend/.github`, `backend/.styleci.yml`, and `backend/.editorconfig` scaffolding.
+- Updated `start-api.bat` and `start-queue.bat` PHP version check from `8.4.1` to `8.2.0`.
+- Added visibility check on `DesignController::similar()` and parent language validation on `GenerationController::storeOption()`.
+- Updated `docs/API.md`, `docs/ARCHITECTURE.md`, and `SECURITY.md` to match the current codebase.
 
 ### Security
 
 - Frontend: upgraded `react-router-dom` 6 → 7 (open-redirect advisories) and `vite` 5 → 7 with
   `@vitejs/plugin-react` 5 (esbuild dev-server advisory). `npm audit` now reports 0 vulnerabilities.
+
+## [1.2.0] — 2026-11-26
+
+### Added
+
+- Multi-screen project generator (`ProjectGenerator`, `ProjectScaffold`, `FrameworkCatalog`,
+  `QwenClient`) backed by a queued job (`GenerateUiProject`) with live progress polling, retry,
+  per-screen HTML previews, framework code generation, and client-side ZIP download (`zip.js`).
+- Database-backed `generator_options` (`GeneratorOptionSeeder`) supporting user-created custom
+  languages, frameworks, screens, and domains.
+- Public user profiles (`ProfileController`, `Profile.jsx`, `Avatar.jsx`) with custom usernames,
+  headlines, bio, skills, external links, square-cropped avatar uploads, and dedicated password change.
 
 ## [1.1.0] — 2026-11-25
 

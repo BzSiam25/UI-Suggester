@@ -63,6 +63,8 @@ class DesignController extends Controller
     /** "More like this": same domain or same screen type. */
     public function similar(Request $request, Design $design)
     {
+        abort_unless($design->isVisibleTo($request->user('sanctum')), 404);
+
         $query = Design::query()->approved()
             ->whereKeyNot($design->id)
             ->where(fn ($q) => $q->where('category_id', $design->category_id)->orWhere('screen_type', $design->screen_type))

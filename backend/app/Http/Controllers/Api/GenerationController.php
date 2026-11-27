@@ -68,8 +68,14 @@ class GenerationController extends Controller
         $user = $request->user();
         $slug = Str::slug($data['name']) ?: Str::lower(Str::random(6));
 
-        if ($data['type'] === 'framework' && empty($data['parent'])) {
-            throw ValidationException::withMessages(['parent' => 'Pick the language this framework is for.']);
+        if ($data['type'] === 'framework') {
+            if (empty($data['parent'])) {
+                throw ValidationException::withMessages(['parent' => 'Pick the language this framework is for.']);
+            }
+            $langExists = GeneratorOption::visibleTo($user)->where('type', 'language')->where('slug', $data['parent'])->exists();
+            if (! $langExists) {
+                throw ValidationException::withMessages(['parent' => 'Pick an existing language for this framework.']);
+            }
         }
 
         $existing = GeneratorOption::visibleTo($user)->where('type', $data['type'])->where('slug', $slug)->first();

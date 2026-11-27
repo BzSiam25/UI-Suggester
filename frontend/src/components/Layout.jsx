@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { useAuth } from '../context/AuthContext'
 import Avatar from './Avatar'
 import { useScrollReveal } from '../hooks'
-import { Arrow, Menu, Upload } from './Icons'
+import { Menu, Upload } from './Icons'
 
 const REVEAL = [
   '.hero .wrap > *',

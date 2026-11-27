@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import { Pager, Wall } from '../components/DesignCard'
 import { Empty } from '../components/Guards'
-import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useApi } from '../hooks'
 

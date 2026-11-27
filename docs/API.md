@@ -16,7 +16,7 @@ Accept: application/json
 # register
 curl -X POST http://localhost:8000/api/auth/register \
   -H 'Content-Type: application/json' \
-  -d '{"name":"Ada","email":"ada@example.com","password":"secret1234","password_confirmation":"secret1234"}'
+  -d '{"name":"Ada","email":"ada@example.com","password":"secret!1234","password_confirmation":"secret!1234"}'
 
 # log in
 curl -X POST http://localhost:8000/api/auth/login \
@@ -31,10 +31,12 @@ protected route.
 
 | Scope | Limit |
 |---|---|
-| `POST /auth/register`, `POST /auth/login` | 10 per minute |
+| `POST /auth/register`, `POST /auth/login`, `PUT /auth/password` | 10 per minute |
+| `POST /auth/avatar` | 20 per minute |
 | `POST /designs` (upload) | 20 per hour |
 | `POST /designs/{slug}/comments` | 30 per minute |
-| `POST /generations` | 10 per minute |
+| `POST /generations`, `POST /generations/{id}/retry` | 10 per minute |
+| `POST /generator/options` | 30 per minute |
 
 Exceeding a limit returns `429` with a `Retry-After` header.
 
@@ -50,7 +52,7 @@ Validation failures return `422` with Laravel's shape:
 ```
 
 Other common codes: `401` unauthenticated, `403` forbidden (role or ownership), `404` not found,
-`429` throttled, `500` unexpected server error.
+`409` conflict, `429` throttled, `503` local model server offline, `500` unexpected server error.
 
 ## Endpoints
 
@@ -61,8 +63,14 @@ Other common codes: `401` unauthenticated, `403` forbidden (role or ownership), 
 | POST | `/auth/register` | – | Create an account, returns `{ user, token }` |
 | POST | `/auth/login` | – | Log in, returns `{ user, token }` |
 | GET | `/auth/me` | ✓ | Current user |
-| PUT | `/auth/profile` | ✓ | Update name, bio or password |
+| PUT | `/auth/profile` | ✓ | Update profile fields (`name`, `username`, `headline`, `bio`, `location`, `website`, `skills`, `links`, `is_profile_public`) |
+| PUT | `/auth/password` | ✓ | Change password (`current_password`, `password`, `password_confirmation`) |
+| POST | `/auth/avatar` | ✓ | Upload and square-crop avatar (`avatar` image) |
+| DELETE | `/auth/avatar` | ✓ | Remove avatar |
 | POST | `/auth/logout` | ✓ | Revoke the current token |
+| GET | `/users/{username}` | – | Public profile and stats (owner/admin also see private profiles) |
+| GET | `/users/{username}/designs` | – | Approved designs by user |
+| GET | `/users/{username}/projects` | – | Publicly shared generations by user |
 
 ### Catalogue
 
@@ -102,51 +110,51 @@ Other common codes: `401` unauthenticated, `403` forbidden (role or ownership), 
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| GET | `/generator/options` | – | Platforms, screen types, styles, and whether AI is enabled |
-| POST | `/generations` | ✓ | Generate a mockup |
+| GET | `/generator/options` | – | Languages, frameworks, screens, domains, platforms, styles, limits, and local Qwen health |
+| POST | `/generator/options` | ✓ | Save a custom `language`, `framework`, `screen`, or `domain` |
+| DELETE | `/generator/options/{option}` | owner | Remove a custom option |
+| POST | `/generations` | ✓ | Queue a project generation (`202` accepted, or `503` if Qwen is offline) |
+| POST | `/generations/{id}/retry` | owner | Re-queue a non-active generation |
 | GET | `/my/generations` | ✓ | Own generation history |
-| GET | `/generations/public` | – | Publicly shared mockups |
-| GET | `/generations/{id}` | ✓ | Generation detail, including the design brief |
-| GET | `/generations/{id}/raw` | – | Raw HTML document (`Content-Security-Policy: sandbox`) |
-| PATCH | `/generations/{id}` | owner | `{ "is_public": true|false }` |
-| DELETE | `/generations/{id}` | owner | Delete |
+| GET | `/generations/public` | – | Publicly shared generations |
+| GET | `/generations/{id}` | ✓ / public | Generation detail, progress, previews, generated files, and design brief |
+| GET | `/generations/{id}/raw?screen&download` | ✓ / public | Raw HTML document for a screen (`Content-Security-Policy: sandbox allow-scripts`) |
+| PATCH | `/generations/{id}` | owner | `{ "is_public": true|false }` (only when `status === "done"`) |
+| DELETE | `/generations/{id}` | owner/admin | Delete |
 
 `POST /generations` body:
 
 ```json
 {
-  "prompt": "laundry service website for students",
+  "prompt": "laundry service website for students with pickup scheduling",
+  "language": "javascript",
+  "framework": "react",
   "platform": "web",
-  "screen_type": "landing",
   "style": "modern",
   "accent": "#2563eb",
-  "category_id": 3,
-  "use_ai": true
+  "screens": ["landing", "dashboard"],
+  "domains": ["marketplace"],
+  "use_research": true
 }
 ```
 
-Response (`201`):
+Response (`202`):
 
 ```json
 {
   "data": {
     "id": 42,
+    "status": "pending",
     "provider": "local",
-    "notice": null,
-    "html": "<!DOCTYPE html>…",
-    "design": {
-      "direction": "Editorial",
-      "language": "editorial",
-      "summary": "…",
-      "recipe": { "hero": "…", "proof": "…", "features": "…", "showcase": "…", "closing": "…", "order": "work first" },
-      "research": { "source": "live", "query": "laundry service website ui design inspiration", "references": [] }
+    "progress": {
+      "message": "Waiting for the generator worker",
+      "done": 0,
+      "total": 1,
+      "log": []
     }
   }
 }
 ```
-
-`provider` is `local`, `anthropic` or `template`. When a configured model fails, the response is
-still `201` with `provider: "template"` and a human-readable `notice` explaining the fallback.
 
 ### Admin
 
