@@ -54,8 +54,8 @@ class ProjectScaffold
     {
         $ext = $ts ? 'tsx' : 'jsx';
         $imports = implode("\n", array_map(fn ($x) => "import {$x['pascal']} from './pages/{$x['pascal']}'", $s));
-        $routes = implode("\n", array_map(fn ($x, $i) => "        <Route path=\"".($i === 0 ? '/' : "/{$x['kebab']}")."\" element={<{$x['pascal']} />} />", $s, array_keys($s)));
-        $links = implode("\n", array_map(fn ($x, $i) => "        <NavLink to=\"".($i === 0 ? '/' : "/{$x['kebab']}")."\">{$x['name']}</NavLink>", $s, array_keys($s)));
+        $routes = implode("\n", array_map(fn ($x, $i) => '        <Route path="'.($i === 0 ? '/' : "/{$x['kebab']}")."\" element={<{$x['pascal']} />} />", $s, array_keys($s)));
+        $links = implode("\n", array_map(fn ($x, $i) => '        <NavLink to="'.($i === 0 ? '/' : "/{$x['kebab']}")."\">{$x['name']}</NavLink>", $s, array_keys($s)));
 
         $deps = [
             'name' => $package, 'private' => true, 'version' => '0.1.0', 'type' => 'module',
@@ -125,7 +125,7 @@ class ProjectScaffold
             $this->file('src/app/app.routes.ts', "import { Routes } from '@angular/router';\n{$imports}\n\nexport const routes: Routes = [\n  { path: '', redirectTo: '{$first}', pathMatch: 'full' },\n{$routes},\n];\n"),
             $this->file('src/app/app.component.ts', "import { Component } from '@angular/core';\nimport { RouterOutlet } from '@angular/router';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [RouterOutlet],\n  template: '<router-outlet />',\n})\nexport class AppComponent {}\n"),
             $this->file('src/main.ts', "import { bootstrapApplication } from '@angular/platform-browser';\nimport { provideRouter } from '@angular/router';\nimport { AppComponent } from './app/app.component';\nimport { routes } from './app/app.routes';\n\nbootstrapApplication(AppComponent, { providers: [provideRouter(routes)] });\n"),
-            $this->file('ANGULAR_SETUP.md', "Create a workspace with `npx @angular/cli new ".$this->packageName($brand)." --standalone --routing`, then copy `src/app` and `src/main.ts` from this folder over the generated ones.\n"),
+            $this->file('ANGULAR_SETUP.md', 'Create a workspace with `npx @angular/cli new '.$this->packageName($brand)." --standalone --routing`, then copy `src/app` and `src/main.ts` from this folder over the generated ones.\n"),
         ];
     }
 
@@ -185,7 +185,7 @@ class ProjectScaffold
 
     private function swiftui(array $s, string $brand): array
     {
-        $tabs = implode("\n", array_map(fn ($x) => "            {$x['pascal']}View().tabItem { Label(\"".addslashes($x['name'])."\", systemImage: \"circle\") }", $s));
+        $tabs = implode("\n", array_map(fn ($x) => "            {$x['pascal']}View().tabItem { Label(\"".addslashes($x['name']).'", systemImage: "circle") }', $s));
         $struct = preg_replace('/[^A-Za-z0-9]/', '', ucwords($brand)) ?: 'Generated';
 
         return [$this->file('App/'.$struct.'App.swift', "import SwiftUI\n\n@main\nstruct {$struct}App: App {\n    var body: some Scene {\n        WindowGroup {\n            TabView {\n{$tabs}\n            }\n        }\n    }\n}\n")];
@@ -193,7 +193,7 @@ class ProjectScaffold
 
     private function index(array $s, string $brand, string $ext): array
     {
-        $links = implode("\n", array_map(fn ($x) => "      <li><a href=\"{$x['kebab']}.{$ext}\">".e($x['name'])."</a></li>", $s));
+        $links = implode("\n", array_map(fn ($x) => "      <li><a href=\"{$x['kebab']}.{$ext}\">".e($x['name']).'</a></li>', $s));
 
         return [$this->file('index.html', $this->htmlShell($brand, "<main style=\"font-family:system-ui;max-width:640px;margin:48px auto;padding:0 20px\">\n    <h1>".e($brand)."</h1>\n    <ul>\n{$links}\n    </ul>\n  </main>"))];
     }

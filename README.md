@@ -12,7 +12,7 @@ a single-file HTML screen for it, grounded in real interface references gathered
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 
 [Features](#features) · [How it works](#how-generation-works) · [Getting started](#getting-started) · [Configuration](#configuration) · [API](docs/API.md) · [Architecture](docs/ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md)
 
@@ -50,7 +50,7 @@ No AI API keys are used: the model runs locally (LM Studio or Ollama) and web re
 | Layer | Choice |
 |---|---|
 | API | PHP 8.2+, Laravel 12, Sanctum, MySQL 8 (SQLite in tests) |
-| Web app | React 18, React Router 6, Vite 5, hand-written CSS |
+| Web app | React 18, React Router 7, Vite 7, hand-written CSS |
 | Generation | Qwen on a local OpenAI-compatible server (LM Studio / Ollama), run by a Laravel queue worker |
 | Research | Keyless DuckDuckGo search; the top pages are read for headings, navigation, buttons, colours and fonts |
 
@@ -103,7 +103,7 @@ uispark/
 - PHP **8.2+** with `gd`, `pdo_mysql`, `mbstring`, `fileinfo`
 - Composer **2**
 - MySQL **8** (or MariaDB 10.6+)
-- Node.js **18+** and npm
+- Node.js **20.19+** (or 22.12+) and npm
 
 ### 1. Backend
 

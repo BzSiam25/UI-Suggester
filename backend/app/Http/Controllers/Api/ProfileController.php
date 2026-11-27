@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\DesignResource;
 use App\Http\Resources\GenerationResource;
 use App\Http\Resources\UserResource;
+use App\Models\Comment;
 use App\Models\Design;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +34,7 @@ class ProfileController extends Controller
             'designs' => $approved()->count(),
             'likes_received' => (int) $approved()->sum('likes_count'),
             'projects' => $user->generations()->where('is_public', true)->where('status', 'done')->count(),
-            'comments' => \App\Models\Comment::where('user_id', $user->id)->count(),
+            'comments' => Comment::where('user_id', $user->id)->count(),
         ];
         if ($isOwner) {
             $stats += [

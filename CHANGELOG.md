@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `composer.lock` required PHP 8.4 (Symfony 8 packages) although the project supports PHP 8.2+;
+  Composer now resolves for PHP 8.2 (`config.platform.php`), so CI passes on PHP 8.2 and 8.3.
+- `php artisan test` failed because the empty `tests/Unit` directory was not committed.
+- Code style (Pint) violations in `ProfileController`, `ProjectScaffold` and `config/services.php`.
+
+### Security
+
+- Frontend: upgraded `react-router-dom` 6 → 7 (open-redirect advisories) and `vite` 5 → 7 with
+  `@vitejs/plugin-react` 5 (esbuild dev-server advisory). `npm audit` now reports 0 vulnerabilities.
+
 ## [1.1.0] — 2026-11-25
 
 ### Added

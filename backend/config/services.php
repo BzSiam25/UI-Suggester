@@ -35,8 +35,6 @@ return [
         ],
     ],
 
-
-
     'inspiration' => [
         // Falls back to a keyless HTML search, then to a curated gallery.
         'enabled' => (bool) env('INSPIRATION_SEARCH', true),
